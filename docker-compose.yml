@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres_interview
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: interview_prep
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - postgres-backup-data:/var/lib/postgresql/backup
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  gptj:
+    image: localai/localai:latest
+    container_name: localai_gptj
+    ports:
+      - "8086:8080"
+    volumes:
+      - ./models:/models
+    environment:
+      - OPENAI_API_KEY=your-key
+      - MODELS_PATH=/models
+      - DEBUG=true
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/v1/models" ]
+      interval: 10s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data: 
+  postgres-backup-data:
