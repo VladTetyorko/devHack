@@ -26,4 +26,5 @@ public class AnswerDTO implements BaseDTO {
     private String userName;
     private UUID questionId;
     private String questionText;
+    private LocalDateTime createdAt;
 }

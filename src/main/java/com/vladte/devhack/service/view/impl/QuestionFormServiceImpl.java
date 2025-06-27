@@ -3,6 +3,7 @@ package com.vladte.devhack.service.view.impl;
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.service.domain.InterviewQuestionService;
 import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import com.vladte.devhack.service.view.QuestionFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,10 @@ public class QuestionFormServiceImpl implements QuestionFormService {
 
     @Override
     public void prepareNewQuestionForm(Model model) {
-        model.addAttribute("question", new InterviewQuestion());
-        model.addAttribute("tags", tagService.findAll());
+        ModelBuilder.of(model)
+                .addAttribute("question", new InterviewQuestion())
+                .addAttribute("tags", tagService.findAll())
+                .build();
     }
 
     @Override
@@ -38,8 +41,10 @@ public class QuestionFormServiceImpl implements QuestionFormService {
         Optional<InterviewQuestion> questionOpt = questionService.findById(id);
         if (questionOpt.isPresent()) {
             InterviewQuestion question = questionOpt.get();
-            model.addAttribute("question", question);
-            model.addAttribute("tags", tagService.findAll());
+            ModelBuilder.of(model)
+                    .addAttribute("question", question)
+                    .addAttribute("tags", tagService.findAll())
+                    .build();
             return question;
         }
         return null;
@@ -57,31 +62,43 @@ public class QuestionFormServiceImpl implements QuestionFormService {
 
     @Override
     public void setNewQuestionPageTitle(Model model) {
-        model.addAttribute("pageTitle", "Create New Question");
+        ModelBuilder.of(model)
+                .setPageTitle("Create New Question")
+                .build();
     }
 
     @Override
     public void setEditQuestionPageTitle(Model model) {
-        model.addAttribute("pageTitle", "Edit Question");
+        ModelBuilder.of(model)
+                .setPageTitle("Edit Question")
+                .build();
     }
 
     @Override
     public void prepareGenerateQuestionsForm(Model model) {
-        model.addAttribute("tags", tagService.findAll());
+        ModelBuilder.of(model)
+                .addAttribute("tags", tagService.findAll())
+                .build();
     }
 
     @Override
     public void setGenerateQuestionsPageTitle(Model model) {
-        model.addAttribute("pageTitle", "Generate Questions with AI");
+        ModelBuilder.of(model)
+                .setPageTitle("Generate Questions with AI")
+                .build();
     }
 
     @Override
     public void prepareAutoGenerateQuestionsForm(Model model) {
-        model.addAttribute("tags", tagService.findAll());
+        ModelBuilder.of(model)
+                .addAttribute("tags", tagService.findAll())
+                .build();
     }
 
     @Override
     public void setAutoGenerateQuestionsPageTitle(Model model) {
-        model.addAttribute("pageTitle", "Auto-Generate Easy Questions with AI");
+        ModelBuilder.of(model)
+                .setPageTitle("Auto-Generate Easy Questions with AI")
+                .build();
     }
 }

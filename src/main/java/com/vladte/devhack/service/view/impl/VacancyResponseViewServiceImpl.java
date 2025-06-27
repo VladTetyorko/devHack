@@ -7,6 +7,7 @@ import com.vladte.devhack.model.User;
 import com.vladte.devhack.model.VacancyResponse;
 import com.vladte.devhack.service.domain.UserService;
 import com.vladte.devhack.service.domain.VacancyResponseService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import com.vladte.devhack.service.view.VacancyResponseViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -44,7 +45,7 @@ public class VacancyResponseViewServiceImpl implements VacancyResponseViewServic
     }
 
     @Override
-    public Page<VacancyResponseDTO> prepareCurrentUserVacancyResponsesModel(Model model) {
+    public Page<VacancyResponseDTO> prepareCurrentUserVacancyResponsesModel(int page, int size, Model model) {
         // Get the current authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserEmail = authentication.getName();
@@ -53,25 +54,36 @@ public class VacancyResponseViewServiceImpl implements VacancyResponseViewServic
         User currentUser = userService.findByEmail(currentUserEmail)
                 .orElseThrow(() -> new IllegalStateException("Current user not found"));
 
-        // Get vacancy responses for the current user
-        List<VacancyResponse> vacancyResponses = vacancyResponseService.getVacancyResponsesByUser(currentUser);
+        // Create pageable object
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Get vacancy responses for the current user with pagination
+        Page<VacancyResponse> vacancyResponsePage = vacancyResponseService.getVacancyResponsesByUser(currentUser, pageable);
 
         // Convert entities to DTOs
-        List<VacancyResponseDTO> vacancyResponseDTOs = vacancyResponses.stream()
+        List<VacancyResponseDTO> vacancyResponseDTOs = vacancyResponsePage.getContent().stream()
                 .map(vacancyResponseMapper::toDTO)
                 .collect(Collectors.toList());
 
-        // Add DTOs to model
-        model.addAttribute("vacancyResponses", vacancyResponseDTOs);
-        model.addAttribute("user", currentUser);
+        // Add pagination data to model using ModelBuilder
+        ModelBuilder.of(model)
+                .addAttribute("vacancyResponses", vacancyResponseDTOs)
+                .addAttribute("currentPage", page)
+                .addAttribute("totalPages", vacancyResponsePage.getTotalPages())
+                .addAttribute("totalItems", vacancyResponsePage.getTotalElements())
+                .addAttribute("size", size)
+                .addAttribute("user", currentUser)
+                .build();
 
-        // Create a Page object with the DTOs
-        return new PageImpl<>(vacancyResponseDTOs);
+        // Return the page of DTOs
+        return new PageImpl<>(vacancyResponseDTOs, pageable, vacancyResponsePage.getTotalElements());
     }
 
     @Override
     public void setCurrentUserVacancyResponsesPageTitle(Model model) {
-        model.addAttribute("pageTitle", "My Vacancy Responses");
+        ModelBuilder.of(model)
+                .setPageTitle("My Vacancy Responses")
+                .build();
     }
 
     @Override
@@ -97,22 +109,24 @@ public class VacancyResponseViewServiceImpl implements VacancyResponseViewServic
                 .map(vacancyResponseMapper::toDTO)
                 .collect(Collectors.toList());
 
-        // Add pagination data to model
-        model.addAttribute("vacancyResponses", vacancyResponseDTOs);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", vacancyResponsePage.getTotalPages());
-        model.addAttribute("totalItems", vacancyResponsePage.getTotalElements());
-        model.addAttribute("size", size);
-
-        // Add filter parameters to model for maintaining state in the view
-        model.addAttribute("query", query);
-        model.addAttribute("stage", stage);
-
+        // Add pagination data to model using ModelBuilder
+        ModelBuilder.of(model)
+                .addAttribute("vacancyResponses", vacancyResponseDTOs)
+                .addAttribute("currentPage", page)
+                .addAttribute("totalPages", vacancyResponsePage.getTotalPages())
+                .addAttribute("totalItems", vacancyResponsePage.getTotalElements())
+                .addAttribute("size", size)
+                // Add filter parameters to model for maintaining state in the view
+                .addAttribute("query", query)
+                .addAttribute("stage", stage)
+                .build();
     }
 
     @Override
     public void setSearchResultsPageTitle(Model model) {
-        model.addAttribute("pageTitle", "Vacancy Responses");
+        ModelBuilder.of(model)
+                .setPageTitle("Vacancy Responses")
+                .build();
     }
 
     @Override
@@ -127,14 +141,16 @@ public class VacancyResponseViewServiceImpl implements VacancyResponseViewServic
             // Get user's vacancies with pagination
             Page<VacancyResponse> vacancyResponsePage = vacancyResponseService.getVacancyResponsesByUser(user, pageable);
 
-            // Add pagination data to model
-            model.addAttribute("vacancyResponses", vacancyResponsePage.getContent());
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", vacancyResponsePage.getTotalPages());
-            model.addAttribute("totalItems", vacancyResponsePage.getTotalElements());
-            model.addAttribute("size", size);
+            // Add pagination data to model using ModelBuilder
+            ModelBuilder.of(model)
+                    .addAttribute("vacancyResponses", vacancyResponsePage.getContent())
+                    .addAttribute("currentPage", page)
+                    .addAttribute("totalPages", vacancyResponsePage.getTotalPages())
+                    .addAttribute("totalItems", vacancyResponsePage.getTotalElements())
+                    .addAttribute("size", size)
+                    .addAttribute("user", user)
+                    .build();
 
-            model.addAttribute("user", user);
             return user;
         }
         return null;
@@ -142,6 +158,8 @@ public class VacancyResponseViewServiceImpl implements VacancyResponseViewServic
 
     @Override
     public void setUserVacancyResponsesPageTitle(Model model, User user) {
-        model.addAttribute("pageTitle", "Vacancy Responses for " + user.getName());
+        ModelBuilder.of(model)
+                .setPageTitle("Vacancy Responses for " + user.getName())
+                .build();
     }
 }

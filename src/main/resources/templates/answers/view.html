@@ -59,7 +59,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Created By:</strong> 
-                            <a th:href="@{/users/{id}(id=${answer.user.id})}" th:text="${answer.user.name}">User Name</a>
+                            <a th:href="@{/users/{id}(id=${answer.userId})}" th:text="${answer.userName}">User Name</a>
                         </p>
                     </div>
                     <div class="col-md-6">
@@ -78,16 +78,16 @@
             </div>
             <div class="card-body">
                 <h5>
-                    <a th:href="@{/questions/{id}(id=${answer.question.id})}" 
-                       th:text="${answer.question.questionText}">Question Text</a>
+                    <a th:href="@{/questions/{id}(id=${answer.questionId})}" 
+                       th:text="${answer.questionText}">Question Text</a>
                 </h5>
                 <div class="mb-3">
-                    <span th:text="${answer.question.difficulty}" 
-                          th:class="${answer.question.difficulty == 'Easy' ? 'badge bg-success' : 
-                                     (answer.question.difficulty == 'Medium' ? 'badge bg-warning' : 'badge bg-danger')}">
+                    <span th:text="${question.difficulty}" 
+                          th:class="${question.difficulty == 'Easy' ? 'badge bg-success' : 
+                                     (question.difficulty == 'Medium' ? 'badge bg-warning' : 'badge bg-danger')}">
                         Difficulty
                     </span>
-                    <span th:each="tag : ${answer.question.tags}" class="badge bg-info ms-1">
+                    <span th:each="tag : ${question.tags}" class="badge bg-info ms-1">
                         <a th:href="@{/tags/{id}(id=${tag.id})}" 
                            th:text="${tag.name}" class="text-white text-decoration-none">Tag Name</a>
                     </span>
@@ -96,8 +96,8 @@
                 <!-- Other Answers Count -->
                 <p>
                     <strong>Other Answers:</strong> 
-                    <span th:text="${answer.question.answers.size() - 1}">0</span>
-                    <a th:href="@{/questions/{id}(id=${answer.question.id})}" class="btn btn-sm btn-outline-primary ms-2">
+                    <span th:text="${question.answers.size() - 1}">0</span>
+                    <a th:href="@{/questions/{id}(id=${question.id})}" class="btn btn-sm btn-outline-primary ms-2">
                         View All Answers
                     </a>
                 </p>
@@ -107,7 +107,7 @@
         <!-- Navigation Buttons -->
         <div class="mt-4 d-flex justify-content-between">
             <a th:href="@{/answers}" class="btn btn-outline-secondary">Back to Answers</a>
-            <a th:href="@{/answers/new(questionId=${answer.question.id})}" class="btn btn-primary">
+            <a th:href="@{/answers/new(questionId=${question.id})}" class="btn btn-primary">
                 Add Another Answer to this Question
             </a>
         </div>

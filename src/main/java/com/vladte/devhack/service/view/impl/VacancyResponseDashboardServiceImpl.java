@@ -5,6 +5,7 @@ import com.vladte.devhack.mapper.VacancyResponseMapper;
 import com.vladte.devhack.model.InterviewStage;
 import com.vladte.devhack.model.VacancyResponse;
 import com.vladte.devhack.service.domain.VacancyResponseService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import com.vladte.devhack.service.view.VacancyResponseDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,28 +43,17 @@ public class VacancyResponseDashboardServiceImpl implements VacancyResponseDashb
                 .map(vacancyResponseMapper::toDTO)
                 .collect(Collectors.toList());
 
-        // Add vacancy count to model
-        model.addAttribute("vacancyCount", vacancyResponses.size());
-        model.addAttribute("vacancyResponses", vacancyResponseDTOs);
-
         // Count vacancies by interview stage
         Map<InterviewStage, Long> stageCountMap = vacancyResponses.stream()
                 .collect(Collectors.groupingBy(VacancyResponse::getInterviewStage, Collectors.counting()));
 
-        // Add counts for each stage
+        // Get counts for each stage
         long appliedCount = stageCountMap.getOrDefault(InterviewStage.APPLIED, 0L);
         long phoneInterviewCount = stageCountMap.getOrDefault(InterviewStage.SCREENING, 0L);
         long technicalInterviewCount = stageCountMap.getOrDefault(InterviewStage.TECHNICAL_INTERVIEW, 0L);
         long finalInterviewCount = stageCountMap.getOrDefault(InterviewStage.STAKEHOLDER_INTERVIEW, 0L);
         long offerCount = stageCountMap.getOrDefault(InterviewStage.OFFER, 0L);
         long rejectedCount = stageCountMap.getOrDefault(InterviewStage.REJECTED, 0L);
-
-        model.addAttribute("appliedCount", appliedCount);
-        model.addAttribute("phoneInterviewCount", phoneInterviewCount);
-        model.addAttribute("technicalInterviewCount", technicalInterviewCount);
-        model.addAttribute("finalInterviewCount", finalInterviewCount);
-        model.addAttribute("offerCount", offerCount);
-        model.addAttribute("rejectedCount", rejectedCount);
 
         // Calculate percentages
         int totalVacancies = vacancyResponses.size();
@@ -74,12 +64,28 @@ public class VacancyResponseDashboardServiceImpl implements VacancyResponseDashb
         int offerPercentage = totalVacancies > 0 ? (int) (((double) offerCount / totalVacancies) * 100) : 0;
         int rejectedPercentage = totalVacancies > 0 ? (int) (((double) rejectedCount / totalVacancies) * 100) : 0;
 
-        model.addAttribute("appliedPercentage", appliedPercentage);
-        model.addAttribute("phoneInterviewPercentage", phoneInterviewPercentage);
-        model.addAttribute("technicalInterviewPercentage", technicalInterviewPercentage);
-        model.addAttribute("finalInterviewPercentage", finalInterviewPercentage);
-        model.addAttribute("offerPercentage", offerPercentage);
-        model.addAttribute("rejectedPercentage", rejectedPercentage);
+        // Build the model using ModelBuilder
+        ModelBuilder.of(model)
+                // Add vacancy count and responses
+                .addAttribute("vacancyCount", vacancyResponses.size())
+                .addAttribute("vacancyResponses", vacancyResponseDTOs)
+
+                // Add counts for each stage
+                .addAttribute("appliedCount", appliedCount)
+                .addAttribute("phoneInterviewCount", phoneInterviewCount)
+                .addAttribute("technicalInterviewCount", technicalInterviewCount)
+                .addAttribute("finalInterviewCount", finalInterviewCount)
+                .addAttribute("offerCount", offerCount)
+                .addAttribute("rejectedCount", rejectedCount)
+
+                // Add percentages
+                .addAttribute("appliedPercentage", appliedPercentage)
+                .addAttribute("phoneInterviewPercentage", phoneInterviewPercentage)
+                .addAttribute("technicalInterviewPercentage", technicalInterviewPercentage)
+                .addAttribute("finalInterviewPercentage", finalInterviewPercentage)
+                .addAttribute("offerPercentage", offerPercentage)
+                .addAttribute("rejectedPercentage", rejectedPercentage)
+                .build();
 
         // Create a Page object with the DTOs
         return new PageImpl<>(vacancyResponseDTOs);
@@ -98,37 +104,20 @@ public class VacancyResponseDashboardServiceImpl implements VacancyResponseDashb
                 .map(vacancyResponseMapper::toDTO)
                 .collect(Collectors.toList());
 
-        // Add pagination data to model
-        model.addAttribute("vacancyResponses", vacancyResponsePage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", vacancyResponsePage.getTotalPages());
-        model.addAttribute("totalItems", vacancyResponsePage.getTotalElements());
-        model.addAttribute("size", size);
-
         // Get all vacancy responses for statistics (no pagination needed for statistics)
         List<VacancyResponse> allVacancyResponses = vacancyResponseService.findAll();
-
-        // Add vacancy count to model
-        model.addAttribute("vacancyCount", allVacancyResponses.size());
 
         // Count vacancies by interview stage
         Map<InterviewStage, Long> stageCountMap = allVacancyResponses.stream()
                 .collect(Collectors.groupingBy(VacancyResponse::getInterviewStage, Collectors.counting()));
 
-        // Add counts for each stage
+        // Get counts for each stage
         long appliedCount = stageCountMap.getOrDefault(InterviewStage.APPLIED, 0L);
         long phoneInterviewCount = stageCountMap.getOrDefault(InterviewStage.SCREENING, 0L);
         long technicalInterviewCount = stageCountMap.getOrDefault(InterviewStage.TECHNICAL_INTERVIEW, 0L);
         long finalInterviewCount = stageCountMap.getOrDefault(InterviewStage.STAKEHOLDER_INTERVIEW, 0L);
         long offerCount = stageCountMap.getOrDefault(InterviewStage.OFFER, 0L);
         long rejectedCount = stageCountMap.getOrDefault(InterviewStage.REJECTED, 0L);
-
-        model.addAttribute("appliedCount", appliedCount);
-        model.addAttribute("phoneInterviewCount", phoneInterviewCount);
-        model.addAttribute("technicalInterviewCount", technicalInterviewCount);
-        model.addAttribute("finalInterviewCount", finalInterviewCount);
-        model.addAttribute("offerCount", offerCount);
-        model.addAttribute("rejectedCount", rejectedCount);
 
         // Calculate percentages
         int totalVacancies = allVacancyResponses.size();
@@ -139,12 +128,34 @@ public class VacancyResponseDashboardServiceImpl implements VacancyResponseDashb
         int offerPercentage = totalVacancies > 0 ? (int) (((double) offerCount / totalVacancies) * 100) : 0;
         int rejectedPercentage = totalVacancies > 0 ? (int) (((double) rejectedCount / totalVacancies) * 100) : 0;
 
-        model.addAttribute("appliedPercentage", appliedPercentage);
-        model.addAttribute("phoneInterviewPercentage", phoneInterviewPercentage);
-        model.addAttribute("technicalInterviewPercentage", technicalInterviewPercentage);
-        model.addAttribute("finalInterviewPercentage", finalInterviewPercentage);
-        model.addAttribute("offerPercentage", offerPercentage);
-        model.addAttribute("rejectedPercentage", rejectedPercentage);
+        // Build the model using ModelBuilder
+        ModelBuilder.of(model)
+                // Add pagination data
+                .addAttribute("vacancyResponses", vacancyResponsePage.getContent())
+                .addAttribute("currentPage", page)
+                .addAttribute("totalPages", vacancyResponsePage.getTotalPages())
+                .addAttribute("totalItems", vacancyResponsePage.getTotalElements())
+                .addAttribute("size", size)
+
+                // Add vacancy count
+                .addAttribute("vacancyCount", allVacancyResponses.size())
+
+                // Add counts for each stage
+                .addAttribute("appliedCount", appliedCount)
+                .addAttribute("phoneInterviewCount", phoneInterviewCount)
+                .addAttribute("technicalInterviewCount", technicalInterviewCount)
+                .addAttribute("finalInterviewCount", finalInterviewCount)
+                .addAttribute("offerCount", offerCount)
+                .addAttribute("rejectedCount", rejectedCount)
+
+                // Add percentages
+                .addAttribute("appliedPercentage", appliedPercentage)
+                .addAttribute("phoneInterviewPercentage", phoneInterviewPercentage)
+                .addAttribute("technicalInterviewPercentage", technicalInterviewPercentage)
+                .addAttribute("finalInterviewPercentage", finalInterviewPercentage)
+                .addAttribute("offerPercentage", offerPercentage)
+                .addAttribute("rejectedPercentage", rejectedPercentage)
+                .build();
 
         // Create a Page object with the DTOs
         return new PageImpl<>(vacancyResponseDTOs, pageable, vacancyResponsePage.getTotalElements());
@@ -152,6 +163,8 @@ public class VacancyResponseDashboardServiceImpl implements VacancyResponseDashb
 
     @Override
     public void setDashboardPageTitle(Model model) {
-        model.addAttribute("pageTitle", "Work Dashboard");
+        ModelBuilder.of(model)
+                .setPageTitle("Work Dashboard")
+                .build();
     }
 }

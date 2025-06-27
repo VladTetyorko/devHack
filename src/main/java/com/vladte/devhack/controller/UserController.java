@@ -4,6 +4,7 @@ import com.vladte.devhack.dto.UserDTO;
 import com.vladte.devhack.mapper.UserMapper;
 import com.vladte.devhack.model.User;
 import com.vladte.devhack.service.domain.UserService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,12 +19,9 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController extends BaseCrudController<User, UserDTO, UUID, UserService, UserMapper> {
 
-    private final UserMapper mapper;
-
     @Autowired
     public UserController(UserService userService, UserMapper userMapper) {
         super(userService, userMapper);
-        this.mapper = userMapper;
     }
 
     @Override
@@ -59,8 +57,10 @@ public class UserController extends BaseCrudController<User, UserDTO, UUID, User
      */
     @GetMapping("/new")
     public String newUserForm(Model model) {
-        model.addAttribute("user", new User());
-        setPageTitle(model, "Create New User");
+        ModelBuilder.of(model)
+                .addAttribute("user", new User())
+                .setPageTitle("Create New User")
+                .build();
         return "users/form";
     }
 
@@ -74,8 +74,10 @@ public class UserController extends BaseCrudController<User, UserDTO, UUID, User
     @GetMapping("/{id}/edit")
     public String editUserForm(@PathVariable UUID id, Model model) {
         User user = getEntityOrThrow(service.findById(id), "User not found");
-        model.addAttribute("user", user);
-        setPageTitle(model, "Edit User");
+        ModelBuilder.of(model)
+                .addAttribute("user", user)
+                .setPageTitle("Edit User")
+                .build();
         return "users/form";
     }
 

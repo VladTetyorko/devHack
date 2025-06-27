@@ -10,16 +10,11 @@ import com.vladte.devhack.service.view.VacancyResponseDashboardService;
 import com.vladte.devhack.service.view.VacancyResponseFormService;
 import com.vladte.devhack.service.view.VacancyResponseViewService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Controller for handling requests related to vacancy responses.
@@ -93,22 +88,28 @@ public class VacancyResponseController extends UserEntityController<VacancyRespo
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             Model model) {
-        // Delegate to the dashboard service with pagination
+        // Delegate to the dashboard service
         vacancyResponseDashboardService.prepareDashboardModel(page, size, model);
         vacancyResponseDashboardService.setDashboardPageTitle(model);
+
         return "vacancies/main";
     }
 
     /**
      * Display a list of vacancy responses for the current user.
      *
+     * @param page  the page number
+     * @param size  the page size
      * @param model the model to add attributes to
      * @return the name of the view to render
      */
-    @Override
-    public String list(Model model) {
+    @GetMapping
+    public String list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
         // Delegate to the view service
-        vacancyResponseViewService.prepareCurrentUserVacancyResponsesModel(model);
+        vacancyResponseViewService.prepareCurrentUserVacancyResponsesModel(page, size, model);
         vacancyResponseViewService.setCurrentUserVacancyResponsesPageTitle(model);
         return "vacancies/list";
     }
@@ -134,6 +135,7 @@ public class VacancyResponseController extends UserEntityController<VacancyRespo
         // Delegate to the view service
         vacancyResponseViewService.prepareSearchResultsModel(query, stage, page, size, model);
         vacancyResponseViewService.setSearchResultsPageTitle(model);
+
         return "vacancies/list";
     }
 
@@ -225,28 +227,13 @@ public class VacancyResponseController extends UserEntityController<VacancyRespo
             @RequestParam(defaultValue = "10") int size,
             Model model) {
 
-        User user = getEntityOrThrow(userService.findById(userId), "User not found");
+        // Delegate to the view service
+        User user = vacancyResponseViewService.prepareUserVacancyResponsesModel(userId, page, size, model);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        vacancyResponseViewService.setUserVacancyResponsesPageTitle(model, user);
 
-        // Create pageable object
-        Pageable pageable = PageRequest.of(page, size);
-
-        // Get user's vacancies with pagination
-        Page<VacancyResponse> vacancyResponsePage = service.getVacancyResponsesByUser(user, pageable);
-
-        // Convert entities to DTOs
-        List<VacancyResponseDTO> vacancyResponseDTOs = vacancyResponsePage.getContent().stream()
-                .map(vacancyResponseMapper::toDTO)
-                .collect(Collectors.toList());
-
-        // Add pagination data to model
-        model.addAttribute("vacancyResponses", vacancyResponseDTOs);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", vacancyResponsePage.getTotalPages());
-        model.addAttribute("totalItems", vacancyResponsePage.getTotalElements());
-        model.addAttribute("size", size);
-
-        model.addAttribute("user", user);
-        setPageTitle(model, "Vacancy Responses for " + user.getName());
         return "vacancies/list";
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  * @param <ID> the entity ID type
  * @param <R>  the repository type
  */
+@Component
 public abstract class UserOwnedServiceImpl<T extends BasicEntity, ID, R extends JpaRepository<T, ID>>
         extends BaseServiceImpl<T, ID, R> {
 

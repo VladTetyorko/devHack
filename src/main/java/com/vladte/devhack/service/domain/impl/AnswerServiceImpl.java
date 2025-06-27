@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +60,16 @@ public class AnswerServiceImpl extends UserOwnedServiceImpl<Answer, UUID, Answer
         List<Answer> answers = repository.findByUser(user);
         logger.debug("Found {} answers for user ID: {}", answers.size(), user.getId());
         return answers;
+    }
+
+    @Override
+    public Page<Answer> findAnswersByUser(User user, Pageable pageable) {
+        logger.debug("Finding answers for user ID: {} with pagination", user.getId());
+        Page<Answer> answerPage = repository.findByUser(user, pageable);
+        logger.debug("Found {} answers for user ID: {} (page {} of {})",
+                answerPage.getNumberOfElements(), user.getId(),
+                pageable.getPageNumber(), answerPage.getTotalPages());
+        return answerPage;
     }
 
     @Override

@@ -55,8 +55,8 @@
                     <div th:each="answer : ${answers}" class="list-group-item">
                         <div class="d-flex w-100 justify-content-between mb-2">
                             <h5 class="mb-1">
-                                <a th:href="@{/questions/{id}(id=${answer.question.id})}" 
-                                   th:text="${#strings.abbreviate(answer.question.questionText, 100)}">Question Text</a>
+                                <a th:href="@{/questions/{id}(id=${answer.questionId})}" 
+                                   th:text="${#strings.abbreviate(answer.questionText, 100)}">Question Text</a>
                             </h5>
                             <small th:text="${#temporals.format(answer.createdAt, 'dd MMM yyyy HH:mm')}">Date</small>
                         </div>
@@ -81,7 +81,7 @@
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <div>
                                 <small>
-                                    By: <a th:href="@{/users/{id}(id=${answer.user.id})}" th:text="${answer.user.name}">User Name</a>
+                                    By: <a th:href="@{/users/{id}(id=${answer.userId})}" th:text="${answer.userName}">User Name</a>
                                 </small>
                                 <!-- Check with AI button if not evaluated -->
                                 <a th:if="${answer.aiScore == null}" 

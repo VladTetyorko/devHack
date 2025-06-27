@@ -1,6 +1,7 @@
 package com.vladte.devhack.service.view.impl;
 
 import com.vladte.devhack.service.view.BaseViewService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -13,7 +14,9 @@ public class BaseViewServiceImpl implements BaseViewService {
 
     @Override
     public void setPageTitle(Model model, String title) {
-        model.addAttribute("pageTitle", title);
+        ModelBuilder.of(model)
+                .setPageTitle(title)
+                .build();
     }
 
     @Override

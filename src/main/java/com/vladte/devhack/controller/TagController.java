@@ -7,7 +7,12 @@ import com.vladte.devhack.model.User;
 import com.vladte.devhack.service.api.QuestionGenerationOrchestrationService;
 import com.vladte.devhack.service.domain.TagService;
 import com.vladte.devhack.service.domain.UserService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Controller for handling requests related to tags.
- */
 @Controller
 @RequestMapping("/tags")
 public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagService, TagMapper> {
@@ -61,67 +63,70 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
         return "Tag";
     }
 
-    /**
-     * Display a list of all tags.
-     *
-     * @param model the model to add attributes to
-     * @return the name of the view to render
-     */
     @Override
-    public String list(Model model) {
-        List<Tag> tags = service.findAll();
+    public String list(Model model, 
+                      @RequestParam(defaultValue = "0") int page,
+                      @RequestParam(defaultValue = "10") int size) {
+        // Get all tags first to calculate progress
+        List<Tag> allTags = service.findAll();
 
         // Get the first user for progress calculation (default user)
         Optional<User> userOpt = userService.findAll().stream().findFirst();
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             // Calculate progress for all tags
-            tags = ((TagService) service).calculateProgressForAll(tags, user);
+            allTags = service.calculateProgressForAll(allTags, user);
         }
 
-        // Convert entities to DTOs
-        List<TagDTO> tagDTOs = mapper.toDTOList(tags);
-        model.addAttribute("tags", tagDTOs);
-        setPageTitle(model, "Tags");
+        // Create a pageable object
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Create a Page from the list
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allTags.size());
+
+        List<Tag> pageContent = start < end ? 
+            allTags.subList(start, end) : 
+            List.of();
+
+        Page<Tag> tagPage = new PageImpl<>(pageContent, pageable, allTags.size());
+
+        // Convert entity page to DTO page
+        List<TagDTO> tagDTOs = mapper.toDTOList(pageContent);
+        Page<TagDTO> dtoPage = new PageImpl<>(tagDTOs, pageable, allTags.size());
+
+        // Use ModelBuilder to build the model with pagination
+        ModelBuilder.of(model)
+            .addPagination(dtoPage, page, size, "tags")
+            .setPageTitle("Tags")
+            .build();
+
         return "tags/list";
     }
 
-    /**
-     * Display the form for creating a new tag.
-     *
-     * @param model the model to add attributes to
-     * @return the name of the view to render
-     */
     @GetMapping("/new")
     public String newTagForm(Model model) {
-        model.addAttribute("tag", new TagDTO());
-        model.addAttribute("pageTitle", "Create New Tag");
+        ModelBuilder.of(model)
+            .addAttribute("tag", new TagDTO())
+            .setPageTitle("Create New Tag")
+            .build();
         return "tags/form";
     }
 
-    /**
-     * Display the form for editing an existing tag.
-     *
-     * @param id    the ID of the tag to edit
-     * @param model the model to add attributes to
-     * @return the name of the view to render
-     */
     @GetMapping("/{id}/edit")
     public String editTagForm(@PathVariable UUID id, Model model) {
         Tag tag = getEntityOrThrow(service.findById(id), "Tag not found");
         // Convert entity to DTO
         TagDTO tagDTO = mapper.toDTO(tag);
-        model.addAttribute("tag", tagDTO);
-        setPageTitle(model, "Edit Tag");
+
+        ModelBuilder.of(model)
+            .addAttribute("tag", tagDTO)
+            .setPageTitle("Edit Tag")
+            .build();
+
         return "tags/form";
     }
 
-    /**
-     * Process the form submission for creating or updating a tag.
-     *
-     * @param tagDTO the tag data from the form
-     * @return a redirect to the tag list
-     */
     @PostMapping
     public String saveTag(@ModelAttribute TagDTO tagDTO) {
         // Convert DTO to entity
@@ -132,28 +137,19 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
         return "redirect:/tags";
     }
 
-    /**
-     * Delete a tag.
-     *
-     * @param id the ID of the tag to delete
-     * @return a redirect to the tag list
-     */
     @GetMapping("/{id}/delete")
     public String deleteTag(@PathVariable UUID id) {
         service.deleteById(id);
         return "redirect:/tags";
     }
 
-    /**
-     * Search for tags by name.
-     *
-     * @param name  the name to search for
-     * @param model the model to add attributes to
-     * @return the name of the view to render
-     */
     @GetMapping("/search")
     public String searchTags(@RequestParam String name, Model model) {
         Optional<Tag> tagOpt = service.findTagByName(name);
+
+        // Create a ModelBuilder instance
+        ModelBuilder modelBuilder = ModelBuilder.of(model)
+            .setPageTitle("Search Results for: " + name);
 
         if (tagOpt.isPresent()) {
             Tag tag = tagOpt.get();
@@ -168,23 +164,16 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
 
             // Convert entity to DTO
             TagDTO tagDTO = mapper.toDTO(tag);
-            model.addAttribute("tags", List.of(tagDTO));
+            modelBuilder.addAttribute("tags", List.of(tagDTO));
         } else {
-            model.addAttribute("tags", List.of());
-            model.addAttribute("message", "No tags found with name: " + name);
+            modelBuilder.addAttribute("tags", List.of())
+                       .addAttribute("message", "No tags found with name: " + name);
         }
 
-        setPageTitle(model, "Search Results for: " + name);
+        modelBuilder.build();
         return "tags/list";
     }
 
-    /**
-     * View a tag.
-     *
-     * @param id    the tag ID
-     * @param model the model to add attributes to
-     * @return the name of the view to render
-     */
     @Override
     public String view(@PathVariable UUID id, Model model) {
         Tag tag = getEntityOrThrow(service.findById(id), "Tag not found");
@@ -195,8 +184,11 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
             tag = service.calculateProgress(tag, user);
         }
 
-        model.addAttribute("tag", tag);
-        setPageTitle(model, "Tag Details");
+        ModelBuilder.of(model)
+            .addAttribute("tag", tag)
+            .setPageTitle("Tag Details")
+            .build();
+
         return "tags/view";
     }
 }

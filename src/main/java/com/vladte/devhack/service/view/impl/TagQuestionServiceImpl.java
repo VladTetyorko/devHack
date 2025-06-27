@@ -4,6 +4,7 @@ import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.Tag;
 import com.vladte.devhack.service.domain.InterviewQuestionService;
 import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import com.vladte.devhack.service.view.TagQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,14 +33,20 @@ public class TagQuestionServiceImpl implements TagQuestionService {
     public Tag prepareQuestionsByTagModel(String tagSlug, Model model) {
         Tag tag = getTagBySlugOrThrow(tagSlug, "Tag not found");
         List<InterviewQuestion> questions = questionService.findQuestionsByTag(tag);
-        model.addAttribute("questions", questions);
-        model.addAttribute("tag", tag);
+
+        ModelBuilder.of(model)
+                .addAttribute("questions", questions)
+                .addAttribute("tag", tag)
+                .build();
+
         return tag;
     }
 
     @Override
     public void setQuestionsByTagPageTitle(Model model, String tagName) {
-        model.addAttribute("pageTitle", "Questions tagged with " + tagName);
+        ModelBuilder.of(model)
+                .setPageTitle("Questions tagged with " + tagName)
+                .build();
     }
 
     @Override

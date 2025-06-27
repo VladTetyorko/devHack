@@ -2,6 +2,7 @@ package com.vladte.devhack.service.view.impl;
 
 import com.vladte.devhack.model.BasicEntity;
 import com.vladte.devhack.service.view.BaseCrudViewService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -16,13 +17,17 @@ public class BaseCrudViewServiceImpl extends BaseViewServiceImpl implements Base
 
     @Override
     public <T extends BasicEntity> void prepareListModel(List<T> entities, String entityName, String pageTitle, Model model) {
-        model.addAttribute(getModelAttributeName(entityName), entities);
-        setPageTitle(model, pageTitle);
+        ModelBuilder.of(model)
+                .addAttribute(getModelAttributeName(entityName), entities)
+                .setPageTitle(pageTitle)
+                .build();
     }
 
     @Override
     public <T extends BasicEntity> void prepareDetailModel(T entity, String entityName, String pageTitle, Model model) {
-        model.addAttribute(getModelAttributeName(entityName, false), entity);
-        setPageTitle(model, pageTitle);
+        ModelBuilder.of(model)
+                .addAttribute(getModelAttributeName(entityName, false), entity)
+                .setPageTitle(pageTitle)
+                .build();
     }
 }

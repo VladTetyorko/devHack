@@ -5,16 +5,17 @@ import com.vladte.devhack.model.User;
 import com.vladte.devhack.service.domain.BaseService;
 import com.vladte.devhack.service.domain.UserService;
 import com.vladte.devhack.service.view.BaseViewService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Base controller for operations on user-owned entities.
@@ -144,15 +145,32 @@ public abstract class UserEntityController<E extends BasicEntity, ID, S extends 
     protected abstract String getEntityName();
 
     /**
-     * List all entities that the current user has access to.
+     * List all entities that the current user has access to with pagination.
      *
+     * @param page  the page number (zero-based)
+     * @param size  the page size
      * @param model the model
      * @return the view name
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String list(Model model) {
-        logger.debug("Listing entities with access control");
-        setPageTitle(model, getListPageTitle());
+    public String list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        logger.debug("Listing entities with access control and pagination");
+
+        // Create pageable object
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Get entities with pagination
+        Page<E> entityPage = service.findAll(pageable);
+
+        // Using ModelBuilder to build the model with pagination data
+        ModelBuilder.of(model)
+                .addPagination(entityPage, page, size, "items")
+                .setPageTitle(getListPageTitle())
+                .build();
+
         return getListViewName();
     }
 
@@ -166,7 +184,9 @@ public abstract class UserEntityController<E extends BasicEntity, ID, S extends 
     @GetMapping("/{id}")
     public String view(@PathVariable ID id, Model model) {
         logger.debug("Viewing entity with ID: {} with access control", id);
-        setPageTitle(model, getDetailPageTitle());
+        ModelBuilder.of(model)
+                .setPageTitle(getDetailPageTitle())
+                .build();
         return getDetailViewName();
     }
 }

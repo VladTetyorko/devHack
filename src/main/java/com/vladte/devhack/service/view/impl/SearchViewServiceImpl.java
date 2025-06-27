@@ -2,6 +2,7 @@ package com.vladte.devhack.service.view.impl;
 
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import com.vladte.devhack.service.view.SearchService;
 import com.vladte.devhack.service.view.SearchViewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +39,22 @@ public class SearchViewServiceImpl implements SearchViewService {
         Page<InterviewQuestion> questionPage = searchService.searchQuestions(
                 query, difficulty, tagId, pageable);
 
-        // Add pagination data to model
-        model.addAttribute("questions", questionPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", questionPage.getTotalPages());
-        model.addAttribute("totalItems", questionPage.getTotalElements());
+        // Build the model using ModelBuilder
+        ModelBuilder.of(model)
+                // Add pagination data
+                .addAttribute("questions", questionPage.getContent())
+                .addAttribute("currentPage", page)
+                .addAttribute("totalPages", questionPage.getTotalPages())
+                .addAttribute("totalItems", questionPage.getTotalElements())
 
-        // Add filter parameters to model for maintaining state in the view
-        model.addAttribute("query", query);
-        model.addAttribute("difficulty", difficulty);
-        model.addAttribute("tagId", tagId);
+                // Add filter parameters for maintaining state in the view
+                .addAttribute("query", query)
+                .addAttribute("difficulty", difficulty)
+                .addAttribute("tagId", tagId)
 
-        // Add all tags for the filter dropdown
-        model.addAttribute("allTags", tagService.findAll());
+                // Add all tags for the filter dropdown
+                .addAttribute("allTags", tagService.findAll())
+                .build();
 
         return pageable;
     }
@@ -58,6 +62,8 @@ public class SearchViewServiceImpl implements SearchViewService {
     @Override
     public void setSearchResultsPageTitle(Model model, String query, String difficulty, UUID tagId) {
         String pageTitle = searchService.buildSearchPageTitle(query, difficulty, tagId);
-        model.addAttribute("pageTitle", pageTitle);
+        ModelBuilder.of(model)
+                .setPageTitle(pageTitle)
+                .build();
     }
 }

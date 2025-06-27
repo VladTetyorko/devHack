@@ -24,6 +24,7 @@ public class AnswerMapper implements EntityDTOMapper<Answer, AnswerDTO> {
         dto.setAiFeedback(entity.getAiFeedback());
         dto.setIsCorrect(entity.getIsCorrect());
         dto.setUpdatedAt(entity.getUpdatedAt());
+        dto.setCreatedAt(entity.getCreatedAt());
 
         if (entity.getUser() != null) {
             dto.setUserId(entity.getUser().getId());

@@ -3,6 +3,8 @@ package com.vladte.devhack.service.domain;
 import com.vladte.devhack.model.Answer;
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,15 @@ public interface AnswerService extends BaseService<Answer, UUID> {
      * @return a list of answers by the user
      */
     List<Answer> findAnswersByUser(User user);
+
+    /**
+     * Find answers by user with pagination.
+     *
+     * @param user     the user
+     * @param pageable the pagination information
+     * @return a page of answers by the user
+     */
+    Page<Answer> findAnswersByUser(User user, Pageable pageable);
 
     /**
      * Find answers by question.

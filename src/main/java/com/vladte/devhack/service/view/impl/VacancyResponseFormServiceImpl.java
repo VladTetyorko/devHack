@@ -7,6 +7,7 @@ import com.vladte.devhack.model.User;
 import com.vladte.devhack.model.VacancyResponse;
 import com.vladte.devhack.service.domain.UserService;
 import com.vladte.devhack.service.domain.VacancyResponseService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import com.vladte.devhack.service.view.VacancyResponseFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,9 +38,11 @@ public class VacancyResponseFormServiceImpl implements VacancyResponseFormServic
 
     @Override
     public void prepareNewVacancyResponseForm(Model model) {
-        model.addAttribute("vacancyResponse", new VacancyResponseDTO());
-        model.addAttribute("users", userService.findAll());
-        model.addAttribute("interviewStages", InterviewStage.values());
+        ModelBuilder.of(model)
+                .addAttribute("vacancyResponse", new VacancyResponseDTO())
+                .addAttribute("users", userService.findAll())
+                .addAttribute("interviewStages", InterviewStage.values())
+                .build();
     }
 
     @Override
@@ -48,9 +51,13 @@ public class VacancyResponseFormServiceImpl implements VacancyResponseFormServic
         if (vacancyResponseOpt.isPresent()) {
             VacancyResponse vacancyResponse = vacancyResponseOpt.get();
             VacancyResponseDTO vacancyResponseDTO = vacancyResponseMapper.toDTO(vacancyResponse);
-            model.addAttribute("vacancyResponse", vacancyResponseDTO);
-            model.addAttribute("users", userService.findAll());
-            model.addAttribute("interviewStages", InterviewStage.values());
+
+            ModelBuilder.of(model)
+                    .addAttribute("vacancyResponse", vacancyResponseDTO)
+                    .addAttribute("users", userService.findAll())
+                    .addAttribute("interviewStages", InterviewStage.values())
+                    .build();
+
             return vacancyResponseDTO;
         }
         return null;
@@ -76,11 +83,15 @@ public class VacancyResponseFormServiceImpl implements VacancyResponseFormServic
 
     @Override
     public void setNewVacancyResponsePageTitle(Model model) {
-        model.addAttribute("pageTitle", "New Vacancy Response");
+        ModelBuilder.of(model)
+                .setPageTitle("New Vacancy Response")
+                .build();
     }
 
     @Override
     public void setEditVacancyResponsePageTitle(Model model) {
-        model.addAttribute("pageTitle", "Edit Vacancy Response");
+        ModelBuilder.of(model)
+                .setPageTitle("Edit Vacancy Response")
+                .build();
     }
 }

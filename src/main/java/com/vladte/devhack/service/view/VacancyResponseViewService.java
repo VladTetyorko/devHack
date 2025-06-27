@@ -16,10 +16,12 @@ public interface VacancyResponseViewService {
     /**
      * Prepare the model for the list view of vacancy responses for the current user.
      *
+     * @param page  the page number
+     * @param size  the page size
      * @param model the model to add attributes to
      * @return the page of vacancy response DTOs
      */
-    Page<VacancyResponseDTO> prepareCurrentUserVacancyResponsesModel(Model model);
+    Page<VacancyResponseDTO> prepareCurrentUserVacancyResponsesModel(int page, int size, Model model);
 
     /**
      * Set the page title for the current user's vacancy responses page.

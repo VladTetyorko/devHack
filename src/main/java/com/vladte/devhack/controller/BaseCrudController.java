@@ -6,13 +6,17 @@ import com.vladte.devhack.model.BasicEntity;
 import com.vladte.devhack.service.domain.BaseService;
 import com.vladte.devhack.service.view.BaseCrudViewService;
 import com.vladte.devhack.service.view.BaseViewService;
+import com.vladte.devhack.service.view.ModelBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -113,24 +117,31 @@ public abstract class BaseCrudController<E extends BasicEntity, D extends BaseDT
     protected abstract String getEntityName();
 
     /**
-     * List all entities as DTOs.
+     * List all entities as DTOs with pagination.
      *
      * @param model the model
+     * @param page the page number (0-based)
+     * @param size the page size
      * @return the view name
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String list(Model model) {
-        List<E> entities = service.findAll();
-        List<D> dtos = mapper.toDTOList(entities);
+    public String list(Model model, 
+                      @RequestParam(defaultValue = "0") int page,
+                      @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<E> entityPage = service.findAll(pageable);
+        Page<D> dtoPage = toDTOPage(entityPage);
 
         if (baseCrudViewService != null) {
-            // Use the entity name for model attribute to maintain compatibility
-            model.addAttribute(getModelAttributeName(), dtos);
-            baseCrudViewService.prepareListModel(entities, getEntityName(), getListPageTitle(), model);
+            ModelBuilder.of(model)
+                    .addPagination(dtoPage, page, size, getModelAttributeName())
+                    .build();
+            baseCrudViewService.prepareListModel(entityPage.getContent(), getEntityName(), getListPageTitle(), model);
         } else {
-            // Fallback for backward compatibility
-            model.addAttribute(getModelAttributeName(), dtos);
-            setPageTitle(model, getListPageTitle());
+            ModelBuilder.of(model)
+                    .addPagination(dtoPage, page, size, getModelAttributeName())
+                    .setPageTitle(getListPageTitle())
+                    .build();
         }
         return getListViewName();
     }
@@ -148,13 +159,17 @@ public abstract class BaseCrudController<E extends BasicEntity, D extends BaseDT
         D dto = mapper.toDTO(entity);
 
         if (baseCrudViewService != null) {
-            // Add DTO to model
-            model.addAttribute(getModelAttributeName(false), dto);
+            // Add DTO to model using ModelBuilder
+            ModelBuilder.of(model)
+                    .addAttribute(getModelAttributeName(false), dto)
+                    .build();
             baseCrudViewService.prepareDetailModel(entity, getEntityName(), getDetailPageTitle(), model);
         } else {
-            // Fallback for backward compatibility
-            model.addAttribute(getModelAttributeName(false), dto);
-            setPageTitle(model, getDetailPageTitle());
+            // Fallback for backward compatibility using ModelBuilder
+            ModelBuilder.of(model)
+                    .addAttribute(getModelAttributeName(false), dto)
+                    .setPageTitle(getDetailPageTitle())
+                    .build();
         }
         return getDetailViewName();
     }
