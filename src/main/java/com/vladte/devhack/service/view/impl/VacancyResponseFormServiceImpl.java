@@ -1,5 +1,7 @@
 package com.vladte.devhack.service.view.impl;
 
+import com.vladte.devhack.dto.VacancyResponseDTO;
+import com.vladte.devhack.mapper.VacancyResponseMapper;
 import com.vladte.devhack.model.InterviewStage;
 import com.vladte.devhack.model.User;
 import com.vladte.devhack.model.VacancyResponse;
@@ -22,40 +24,47 @@ public class VacancyResponseFormServiceImpl implements VacancyResponseFormServic
 
     private final VacancyResponseService vacancyResponseService;
     private final UserService userService;
+    private final VacancyResponseMapper vacancyResponseMapper;
 
     @Autowired
-    public VacancyResponseFormServiceImpl(VacancyResponseService vacancyResponseService, UserService userService) {
+    public VacancyResponseFormServiceImpl(VacancyResponseService vacancyResponseService,
+                                          UserService userService,
+                                          VacancyResponseMapper vacancyResponseMapper) {
         this.vacancyResponseService = vacancyResponseService;
         this.userService = userService;
+        this.vacancyResponseMapper = vacancyResponseMapper;
     }
 
     @Override
     public void prepareNewVacancyResponseForm(Model model) {
-        model.addAttribute("vacancyResponse", new VacancyResponse());
+        model.addAttribute("vacancyResponse", new VacancyResponseDTO());
         model.addAttribute("users", userService.findAll());
         model.addAttribute("interviewStages", InterviewStage.values());
     }
 
     @Override
-    public VacancyResponse prepareEditVacancyResponseForm(UUID id, Model model) {
+    public VacancyResponseDTO prepareEditVacancyResponseForm(UUID id, Model model) {
         Optional<VacancyResponse> vacancyResponseOpt = vacancyResponseService.findById(id);
         if (vacancyResponseOpt.isPresent()) {
             VacancyResponse vacancyResponse = vacancyResponseOpt.get();
-            model.addAttribute("vacancyResponse", vacancyResponse);
+            VacancyResponseDTO vacancyResponseDTO = vacancyResponseMapper.toDTO(vacancyResponse);
+            model.addAttribute("vacancyResponse", vacancyResponseDTO);
             model.addAttribute("users", userService.findAll());
             model.addAttribute("interviewStages", InterviewStage.values());
-            return vacancyResponse;
+            return vacancyResponseDTO;
         }
         return null;
     }
 
     @Override
-    public VacancyResponse saveVacancyResponse(VacancyResponse vacancyResponse, UUID userId) {
+    public VacancyResponseDTO saveVacancyResponse(VacancyResponseDTO vacancyResponseDTO, UUID userId) {
         Optional<User> userOpt = userService.findById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
+            VacancyResponse vacancyResponse = vacancyResponseMapper.toEntity(vacancyResponseDTO);
             vacancyResponse.setUser(user);
-            return vacancyResponseService.save(vacancyResponse);
+            VacancyResponse savedVacancyResponse = vacancyResponseService.save(vacancyResponse);
+            return vacancyResponseMapper.toDTO(savedVacancyResponse);
         }
         return null;
     }

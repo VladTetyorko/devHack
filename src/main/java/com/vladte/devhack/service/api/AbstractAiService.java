@@ -103,17 +103,15 @@ public abstract class AbstractAiService implements OpenAiService {
     /**
      * Generate interview questions based on a tag.
      *
-     * @param tag the tag to generate questions for
-     * @param count the number of questions to generate
+     * @param tag        the tag to generate questions for
+     * @param count      the number of questions to generate
      * @param difficulty the difficulty level of the questions
      * @return the generated questions
      */
     @Override
     public String generateQuestionsForTag(String tag, int count, String difficulty) {
         String prompt = String.format(
-                "Generate %d %s difficulty interview questions about %s. " +
-                "Dont use any other output, just pure questions, no comments, no additions "+
-                "Format each question on a new line starting with 'Question: '.",
+                AiPromptConstraints.GENERATE_QUESTIONS_TEMPLATE,
                 count, difficulty, tag);
 
         return generateText(prompt);
@@ -135,8 +133,8 @@ public abstract class AbstractAiService implements OpenAiService {
     /**
      * Generate interview questions based on a tag asynchronously.
      *
-     * @param tag the tag to generate questions for
-     * @param count the number of questions to generate
+     * @param tag        the tag to generate questions for
+     * @param count      the number of questions to generate
      * @param difficulty the difficulty level of the questions
      * @return a CompletableFuture containing the generated questions
      */
@@ -151,18 +149,13 @@ public abstract class AbstractAiService implements OpenAiService {
      * Check an answer to an interview question and provide a score.
      *
      * @param questionText the text of the interview question
-     * @param answerText the text of the answer to check
+     * @param answerText   the text of the answer to check
      * @return a score between 0 and 100 indicating how correct the answer is
      */
     @Override
     public Double checkAnswer(String questionText, String answerText) {
         String prompt = String.format(
-                "You are an expert evaluator for technical interview answers. " +
-                "Please evaluate the following answer to the given question. " +
-                "Question: %s\n\n" +
-                "Answer: %s\n\n" +
-                "Provide a score from 0 to 100 that indicates how correct and complete the answer is. " +
-                "Return only the numeric score without any additional text or explanation.",
+                AiPromptConstraints.CHECK_ANSWER_TEMPLATE,
                 questionText, answerText);
 
         String response = generateText(prompt);
@@ -191,7 +184,7 @@ public abstract class AbstractAiService implements OpenAiService {
      * Check an answer to an interview question and provide a score asynchronously.
      *
      * @param questionText the text of the interview question
-     * @param answerText the text of the answer to check
+     * @param answerText   the text of the answer to check
      * @return a CompletableFuture containing a score between 0 and 100 indicating how correct the answer is
      */
     @Override
@@ -205,21 +198,13 @@ public abstract class AbstractAiService implements OpenAiService {
      * Check an answer to an interview question and provide a score and feedback.
      *
      * @param questionText the text of the interview question
-     * @param answerText the text of the answer to check
+     * @param answerText   the text of the answer to check
      * @return a map containing the score and feedback
      */
     @Override
     public Map<String, Object> checkAnswerWithFeedback(String questionText, String answerText) {
         String prompt = String.format(
-                "You are an expert evaluator for technical interview answers. " +
-                "Please evaluate the following answer to the given question. " +
-                "Question: %s\n\n" +
-                "Answer: %s\n\n" +
-                "Provide a detailed evaluation of the answer, including strengths, weaknesses, and suggestions for improvement. " +
-                "Also provide a score from 0 to 100 that indicates how correct and complete the answer is. " +
-                "Format your response as follows:\n" +
-                "Score: [numeric score]\n" +
-                "Feedback: [your detailed feedback]",
+                AiPromptConstraints.CHECK_ANSWER_WITH_FEEDBACK_TEMPLATE,
                 questionText, answerText);
 
         String response = generateText(prompt);
@@ -262,7 +247,7 @@ public abstract class AbstractAiService implements OpenAiService {
      * Check an answer to an interview question and provide a score and feedback asynchronously.
      *
      * @param questionText the text of the interview question
-     * @param answerText the text of the answer to check
+     * @param answerText   the text of the answer to check
      * @return a CompletableFuture containing a map with the score and feedback
      */
     @Override

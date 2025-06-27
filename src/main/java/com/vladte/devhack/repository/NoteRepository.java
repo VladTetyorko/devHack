@@ -17,19 +17,23 @@ import java.util.UUID;
 public interface NoteRepository extends JpaRepository<Note, UUID> {
     // Custom query methods
     List<Note> findByUser(User user);
+
     List<Note> findByQuestion(InterviewQuestion question);
+
     List<Note> findByUserAndQuestion(User user, InterviewQuestion question);
 
     // Paginated versions of the query methods
     Page<Note> findByUser(User user, Pageable pageable);
+
     Page<Note> findByQuestion(InterviewQuestion question, Pageable pageable);
+
     Page<Note> findByUserAndQuestion(User user, InterviewQuestion question, Pageable pageable);
 
     // Search method with pagination
     @Query("SELECT n FROM Note n WHERE " +
-           "(:query IS NULL OR LOWER(n.noteText) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
-           "(:userId IS NULL OR n.user.id = :userId) AND " +
-           "(:questionId IS NULL OR n.question.id = :questionId)")
+            "(:query IS NULL OR LOWER(n.noteText) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "(:userId IS NULL OR n.user.id = :userId) AND " +
+            "(:questionId IS NULL OR n.question.id = :questionId)")
     Page<Note> searchNotes(
             @Param("query") String query,
             @Param("userId") UUID userId,

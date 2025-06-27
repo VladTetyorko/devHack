@@ -7,6 +7,8 @@ import com.vladte.devhack.service.domain.AnswerService;
 import com.vladte.devhack.service.domain.InterviewQuestionService;
 import com.vladte.devhack.service.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +22,19 @@ import java.util.UUID;
  */
 @Controller
 @RequestMapping("/answers")
-public class AnswerController extends BaseCrudController<Answer, UUID, AnswerService> {
+public class AnswerController extends UserEntityController<Answer, UUID, AnswerService> {
 
-    private final UserService userService;
     private final InterviewQuestionService questionService;
 
     @Autowired
     public AnswerController(AnswerService answerService, UserService userService, InterviewQuestionService questionService) {
-        super(answerService);
-        this.userService = userService;
+        super(answerService, userService);
         this.questionService = questionService;
+    }
+
+    @Override
+    protected User getEntityUser(Answer entity) {
+        return entity.getUser();
     }
 
     @Override
@@ -58,16 +63,26 @@ public class AnswerController extends BaseCrudController<Answer, UUID, AnswerSer
     }
 
     /**
-     * Display a list of all answers.
+     * Display a list of answers for the current user.
      *
      * @param model the model to add attributes to
      * @return the name of the view to render
      */
     @Override
     public String list(Model model) {
-        List<Answer> answers = service.findAll();
+        // Get the current authenticated user
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        String currentUserEmail = authentication.getName();
+
+        // Find the user by email
+        User currentUser = userService.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new IllegalStateException("Current user not found"));
+
+        // Get answers for the current user
+        List<Answer> answers = service.findAnswersByUser(currentUser);
         model.addAttribute("answers", answers);
-        setPageTitle(model, "Answers");
+        setPageTitle(model, "My Answers");
         return "answers/list";
     }
 
@@ -97,6 +112,24 @@ public class AnswerController extends BaseCrudController<Answer, UUID, AnswerSer
         setPageTitle(model, "Create New Answer");
         return "answers/form";
     }
+
+    /**
+     * Display the form for editing an existing answer.
+     *
+     * @param id    the ID of the answer to edit
+     * @param model the model to add attributes to
+     * @return the name of the view to render
+     */
+    @GetMapping("/{id}")
+    public String view(@PathVariable UUID id, Model model) {
+        Answer answer = getEntityOrThrow(service.findById(id), "Answer not found");
+        model.addAttribute("answer", answer);
+        model.addAttribute("users", userService.findAll());
+        model.addAttribute("questions", questionService.findAll());
+        setPageTitle(model, "Edit Answer");
+        return "answers/view";
+    }
+
 
     /**
      * Display the form for editing an existing answer.

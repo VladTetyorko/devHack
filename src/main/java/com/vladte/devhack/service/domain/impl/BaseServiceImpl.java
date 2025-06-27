@@ -17,9 +17,9 @@ import java.util.Optional;
  * Base implementation of the BaseService interface.
  * Provides default implementations for common CRUD operations.
  *
- * @param <T> the entity type, must extend BasicEntity
+ * @param <T>  the entity type, must extend BasicEntity
  * @param <ID> the entity ID type
- * @param <R> the repository type
+ * @param <R>  the repository type
  */
 public abstract class BaseServiceImpl<T extends BasicEntity, ID, R extends JpaRepository<T, ID>> implements BaseService<T, ID> {
 
@@ -31,7 +31,7 @@ public abstract class BaseServiceImpl<T extends BasicEntity, ID, R extends JpaRe
     /**
      * Constructor with repository and auditService injection.
      *
-     * @param repository the JPA repository
+     * @param repository   the JPA repository
      * @param auditService the audit service
      */
     protected BaseServiceImpl(R repository, AuditService auditService) {
@@ -61,8 +61,8 @@ public abstract class BaseServiceImpl<T extends BasicEntity, ID, R extends JpaRe
     /**
      * Save an entity and create an audit record.
      *
-     * @param entity the entity to save
-     * @param user the user performing the operation
+     * @param entity  the entity to save
+     * @param user    the user performing the operation
      * @param details additional details about the operation
      * @return the saved entity
      */
@@ -101,10 +101,10 @@ public abstract class BaseServiceImpl<T extends BasicEntity, ID, R extends JpaRe
 
     @Override
     public Page<T> findAll(Pageable pageable) {
-        logger.debug("Finding all entities with pagination: page {}, size {}", 
+        logger.debug("Finding all entities with pagination: page {}, size {}",
                 pageable.getPageNumber(), pageable.getPageSize());
         Page<T> page = repository.findAll(pageable);
-        logger.debug("Found {} entities (page {} of {})", 
+        logger.debug("Found {} entities (page {} of {})",
                 page.getNumberOfElements(), page.getNumber() + 1, page.getTotalPages());
         return page;
     }
@@ -124,8 +124,8 @@ public abstract class BaseServiceImpl<T extends BasicEntity, ID, R extends JpaRe
     /**
      * Find an entity by ID and create an audit record.
      *
-     * @param id the ID of the entity to find
-     * @param user the user performing the operation
+     * @param id      the ID of the entity to find
+     * @param user    the user performing the operation
      * @param details additional details about the operation
      * @return an Optional containing the entity, or empty if not found
      */
@@ -160,10 +160,10 @@ public abstract class BaseServiceImpl<T extends BasicEntity, ID, R extends JpaRe
     /**
      * Delete an entity by ID and create an audit record.
      *
-     * @param id the ID of the entity to delete
+     * @param id          the ID of the entity to delete
      * @param entityClass the class of the entity being deleted
-     * @param user the user performing the operation
-     * @param details additional details about the operation
+     * @param user        the user performing the operation
+     * @param details     additional details about the operation
      */
     public void deleteById(ID id, Class<?> entityClass, User user, String details) {
         logger.debug("Deleting entity of type {} with ID: {} with audit", entityClass.getSimpleName(), id);

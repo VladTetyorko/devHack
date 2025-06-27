@@ -38,8 +38,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository>
     /**
      * Constructor with repository and auditUtil injection.
      *
-     * @param repository the user repository
-     * @param auditUtil the audit utility
+     * @param repository      the user repository
+     * @param auditUtil       the audit utility
      * @param passwordEncoder for password encoding
      */
     @Autowired
@@ -86,9 +86,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository>
      * Save a user and create an audit record.
      * This method demonstrates how to use the audit functionality.
      *
-     * @param user the user to save
+     * @param user        the user to save
      * @param currentUser the user performing the operation
-     * @param details additional details about the operation
+     * @param details     additional details about the operation
      * @return the saved user
      */
     public User saveWithAudit(User user, User currentUser, String details) {
@@ -105,12 +105,26 @@ public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository>
     }
 
     /**
+     * Register a new manager user.
+     *
+     * @param user the user to register
+     * @return the registered user
+     */
+    public User registerManager(User user) {
+        logger.debug("Registering manager user: {}", user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole("MANAGER");
+
+        return super.save(user, self.getSystemUser(), "Registering manager user ");
+    }
+
+    /**
      * Find a user by ID and create an audit record.
      * This method demonstrates how to use the audit functionality.
      *
-     * @param id the ID of the user to find
+     * @param id          the ID of the user to find
      * @param currentUser the user performing the operation
-     * @param details additional details about the operation
+     * @param details     additional details about the operation
      * @return an Optional containing the user, or empty if not found
      */
     public java.util.Optional<User> findByIdWithAudit(UUID id, User currentUser, String details) {
@@ -121,9 +135,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, UUID, UserRepository>
      * Delete a user by ID and create an audit record.
      * This method demonstrates how to use the audit functionality.
      *
-     * @param id the ID of the user to delete
+     * @param id          the ID of the user to delete
      * @param currentUser the user performing the operation
-     * @param details additional details about the operation
+     * @param details     additional details about the operation
      */
     public void deleteByIdWithAudit(UUID id, User currentUser, String details) {
         deleteById(id, User.class, currentUser, details);

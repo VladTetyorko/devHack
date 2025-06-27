@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
  * This interface follows the Single Responsibility Principle by focusing only on dashboard view preparation.
  */
 public interface DashboardViewService {
-    
+
     /**
      * Prepare the model for the dashboard view.
      * This method adds all necessary attributes to the model for rendering the dashboard.
@@ -15,7 +15,7 @@ public interface DashboardViewService {
      * @param model the model to add attributes to
      */
     void prepareDashboardModel(Model model);
-    
+
     /**
      * Set the page title for the dashboard.
      *

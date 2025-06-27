@@ -1,6 +1,7 @@
 package com.vladte.devhack.service.view;
 
-import org.springframework.data.domain.Pageable;
+import com.vladte.devhack.dto.VacancyResponseDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
 
 /**
@@ -13,18 +14,19 @@ public interface VacancyResponseDashboardService {
      * Prepare the model for the dashboard view.
      *
      * @param model the model to add attributes to
+     * @return the page of vacancy response DTOs
      */
-    void prepareDashboardModel(Model model);
+    Page<VacancyResponseDTO> prepareDashboardModel(Model model);
 
     /**
      * Prepare the model for the dashboard view with pagination for the vacancy responses.
      *
-     * @param page the page number
-     * @param size the page size
+     * @param page  the page number
+     * @param size  the page size
      * @param model the model to add attributes to
-     * @return the pageable object created for the dashboard
+     * @return the page of vacancy response DTOs
      */
-    Pageable prepareDashboardModel(int page, int size, Model model);
+    Page<VacancyResponseDTO> prepareDashboardModel(int page, int size, Model model);
 
     /**
      * Set the page title for the dashboard page.

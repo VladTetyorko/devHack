@@ -27,4 +27,12 @@ public interface UserService extends BaseService<User, UUID>, UserDetailsService
     Optional<User> findByEmail(String email);
 
     User reguister(User user);
+
+    /**
+     * Register a new manager user.
+     *
+     * @param user the user to register
+     * @return the registered user
+     */
+    User registerManager(User user);
 }

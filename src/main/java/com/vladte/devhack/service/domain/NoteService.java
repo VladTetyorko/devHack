@@ -30,7 +30,7 @@ public interface NoteService extends BaseService<Note, UUID> {
     /**
      * Find notes by user and linked question.
      *
-     * @param user the user
+     * @param user     the user
      * @param question the question
      * @return a list of notes by the user and linked to the question
      */

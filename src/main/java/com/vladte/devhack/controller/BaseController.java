@@ -64,9 +64,9 @@ public abstract class BaseController {
     /**
      * Get an entity from an Optional or throw a NOT_FOUND exception.
      *
-     * @param optional the Optional containing the entity
+     * @param optional     the Optional containing the entity
      * @param errorMessage the error message if the entity is not found
-     * @param <T> the entity type
+     * @param <T>          the entity type
      * @return the entity
      * @throws ResponseStatusException if the entity is not found
      */
@@ -77,10 +77,10 @@ public abstract class BaseController {
     /**
      * Process an entity if it exists, or throw a NOT_FOUND exception.
      *
-     * @param optional the Optional containing the entity
-     * @param consumer the consumer to process the entity
+     * @param optional     the Optional containing the entity
+     * @param consumer     the consumer to process the entity
      * @param errorMessage the error message if the entity is not found
-     * @param <T> the entity type
+     * @param <T>          the entity type
      * @throws ResponseStatusException if the entity is not found
      */
     protected <T> void processEntityOrThrow(Optional<T> optional, Consumer<T> consumer, String errorMessage) {

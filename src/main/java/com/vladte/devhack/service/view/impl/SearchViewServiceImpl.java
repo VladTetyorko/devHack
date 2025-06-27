@@ -1,8 +1,8 @@
 package com.vladte.devhack.service.view.impl;
 
 import com.vladte.devhack.model.InterviewQuestion;
-import com.vladte.devhack.service.view.SearchService;
 import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.view.SearchService;
 import com.vladte.devhack.service.view.SearchViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,7 +51,7 @@ public class SearchViewServiceImpl implements SearchViewService {
 
         // Add all tags for the filter dropdown
         model.addAttribute("allTags", tagService.findAll());
-        
+
         return pageable;
     }
 

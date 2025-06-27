@@ -2,12 +2,12 @@ package com.vladte.devhack.service.api.impl;
 
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.Tag;
-import com.vladte.devhack.service.domain.InterviewQuestionService;
-import com.vladte.devhack.service.domain.TagService;
-import com.vladte.devhack.service.domain.UserService;
 import com.vladte.devhack.service.api.OpenAiService;
 import com.vladte.devhack.service.api.QuestionGenerationService;
 import com.vladte.devhack.service.api.QuestionParsingService;
+import com.vladte.devhack.service.domain.InterviewQuestionService;
+import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.domain.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -55,8 +51,8 @@ public class QuestionGenerationServiceImpl implements QuestionGenerationService 
     /**
      * Generate interview questions based on a tag and save them to the database.
      *
-     * @param tagName the name of the tag to generate questions for
-     * @param count the number of questions to generate
+     * @param tagName    the name of the tag to generate questions for
+     * @param count      the number of questions to generate
      * @param difficulty the difficulty level of the questions
      * @return the list of generated questions
      */
@@ -101,9 +97,9 @@ public class QuestionGenerationServiceImpl implements QuestionGenerationService 
      * Save the generated questions to the database.
      * This method is separated to allow for transaction management.
      *
-     * @param questionTexts the list of question texts to save
-     * @param difficulty the difficulty level of the questions
-     * @param tag the tag to associate with the questions
+     * @param questionTexts  the list of question texts to save
+     * @param difficulty     the difficulty level of the questions
+     * @param tag            the tag to associate with the questions
      * @param savedQuestions the list to add the saved questions to
      */
     @Transactional

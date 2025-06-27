@@ -2,21 +2,17 @@ package com.vladte.devhack.service.api.impl;
 
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.Tag;
-import com.vladte.devhack.service.api.QuestionGenerationOrchestrationService;
-import com.vladte.devhack.service.domain.TagService;
 import com.vladte.devhack.service.api.AutoQuestionGenerationService;
+import com.vladte.devhack.service.api.QuestionGenerationOrchestrationService;
 import com.vladte.devhack.service.api.QuestionGenerationService;
+import com.vladte.devhack.service.domain.TagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -49,20 +45,20 @@ public class QuestionGenerationOrchestrationServiceImpl implements QuestionGener
 
     @Override
     public CompletableFuture<List<InterviewQuestion>> startQuestionGeneration(String tagName, int count, String difficulty) {
-        logger.info("Starting asynchronous generation of {} {} difficulty questions for tag: {}", 
+        logger.info("Starting asynchronous generation of {} {} difficulty questions for tag: {}",
                 count, difficulty, tagName);
 
         // Start the asynchronous generation process without blocking
         return questionGenerationService.generateAndSaveQuestions(tagName, count, difficulty)
-            .thenApply(questions -> {
-                logger.info("Successfully generated {} questions for tag: {}", questions.size(), tagName);
-                return questions;
-            })
-            .exceptionally(ex -> {
-                // Log the error but don't block the user
-                logger.error("Error generating questions: {}", ex.getMessage(), ex);
-                return null;
-            });
+                .thenApply(questions -> {
+                    logger.info("Successfully generated {} questions for tag: {}", questions.size(), tagName);
+                    return questions;
+                })
+                .exceptionally(ex -> {
+                    // Log the error but don't block the user
+                    logger.error("Error generating questions: {}", ex.getMessage(), ex);
+                    return null;
+                });
     }
 
     @Override
@@ -71,16 +67,16 @@ public class QuestionGenerationOrchestrationServiceImpl implements QuestionGener
 
         // Start the asynchronous generation process without blocking
         return autoQuestionGenerationService.generateEasyQuestionsForTagName(tagName)
-            .thenApply(questions -> {
-                logger.info("Successfully auto-generated {} easy questions for tag: {}", 
-                        questions.size(), tagName);
-                return questions;
-            })
-            .exceptionally(ex -> {
-                // Log the error but don't block the user
-                logger.error("Error auto-generating questions: {}", ex.getMessage(), ex);
-                return null;
-            });
+                .thenApply(questions -> {
+                    logger.info("Successfully auto-generated {} easy questions for tag: {}",
+                            questions.size(), tagName);
+                    return questions;
+                })
+                .exceptionally(ex -> {
+                    // Log the error but don't block the user
+                    logger.error("Error auto-generating questions: {}", ex.getMessage(), ex);
+                    return null;
+                });
     }
 
     @Override
@@ -90,13 +86,13 @@ public class QuestionGenerationOrchestrationServiceImpl implements QuestionGener
 
     @Override
     public String buildGenerationSuccessMessage(int count, String difficulty, String tagName) {
-        return String.format("Started generating %d %s difficulty questions for tag '%s'. They will appear shortly.", 
+        return String.format("Started generating %d %s difficulty questions for tag '%s'. They will appear shortly.",
                 count, difficulty, tagName);
     }
 
     @Override
     public String buildEasyGenerationSuccessMessage(String tagName) {
-        return String.format("Started auto-generating 3 easy questions for tag '%s'. They will appear shortly.", 
+        return String.format("Started auto-generating 3 easy questions for tag '%s'. They will appear shortly.",
                 tagName);
     }
 
@@ -118,21 +114,21 @@ public class QuestionGenerationOrchestrationServiceImpl implements QuestionGener
 
         // Start the asynchronous generation process without blocking
         return autoQuestionGenerationService.generateEasyQuestionsForMultipleTags(tagIds)
-            .thenApply(questions -> {
-                logger.info("Successfully auto-generated {} easy questions for {} tags", 
-                        questions.size(), tagIds.size());
-                return questions;
-            })
-            .exceptionally(ex -> {
-                // Log the error but don't block the user
-                logger.error("Error auto-generating questions for multiple tags: {}", ex.getMessage(), ex);
-                return null;
-            });
+                .thenApply(questions -> {
+                    logger.info("Successfully auto-generated {} easy questions for {} tags",
+                            questions.size(), tagIds.size());
+                    return questions;
+                })
+                .exceptionally(ex -> {
+                    // Log the error but don't block the user
+                    logger.error("Error auto-generating questions for multiple tags: {}", ex.getMessage(), ex);
+                    return null;
+                });
     }
 
     @Override
     public String buildMultiTagEasyGenerationSuccessMessage(int tagCount) {
-        return String.format("Started auto-generating easy questions for %d tags. They will appear shortly.", 
+        return String.format("Started auto-generating easy questions for %d tags. They will appear shortly.",
                 tagCount);
     }
 }

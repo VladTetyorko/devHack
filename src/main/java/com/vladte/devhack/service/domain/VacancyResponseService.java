@@ -1,8 +1,8 @@
 package com.vladte.devhack.service.domain;
 
-import com.vladte.devhack.model.VacancyResponse;
-import com.vladte.devhack.model.User;
 import com.vladte.devhack.model.InterviewStage;
+import com.vladte.devhack.model.User;
+import com.vladte.devhack.model.VacancyResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -25,7 +25,7 @@ public interface VacancyResponseService extends BaseService<VacancyResponse, UUI
     /**
      * Get all vacancy responses for a specific user with pagination.
      *
-     * @param user the user to get vacancy responses for
+     * @param user     the user to get vacancy responses for
      * @param pageable the pagination information
      * @return a page of vacancy responses
      */
@@ -42,7 +42,7 @@ public interface VacancyResponseService extends BaseService<VacancyResponse, UUI
     /**
      * Get all vacancy responses for a specific user ID with pagination.
      *
-     * @param userId the ID of the user to get vacancy responses for
+     * @param userId   the ID of the user to get vacancy responses for
      * @param pageable the pagination information
      * @return a page of vacancy responses
      */
@@ -60,7 +60,7 @@ public interface VacancyResponseService extends BaseService<VacancyResponse, UUI
      * Get all vacancy responses for a specific company name with pagination.
      *
      * @param companyName the company name to get vacancy responses for
-     * @param pageable the pagination information
+     * @param pageable    the pagination information
      * @return a page of vacancy responses
      */
     Page<VacancyResponse> getVacancyResponsesByCompanyName(String companyName, Pageable pageable);
@@ -85,8 +85,8 @@ public interface VacancyResponseService extends BaseService<VacancyResponse, UUI
     /**
      * Search for vacancy responses by query and interview stage with pagination.
      *
-     * @param query the search query for company name, position, or technologies
-     * @param stage the interview stage to filter by
+     * @param query    the search query for company name, position, or technologies
+     * @param stage    the interview stage to filter by
      * @param pageable the pagination information
      * @return a page of vacancy responses
      */

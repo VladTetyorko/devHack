@@ -1,5 +1,7 @@
 package com.vladte.devhack.controller;
 
+import com.vladte.devhack.dto.TagDTO;
+import com.vladte.devhack.mapper.TagMapper;
 import com.vladte.devhack.model.Tag;
 import com.vladte.devhack.model.User;
 import com.vladte.devhack.service.api.QuestionGenerationOrchestrationService;
@@ -19,14 +21,17 @@ import java.util.UUID;
  */
 @Controller
 @RequestMapping("/tags")
-public class TagController extends BaseCrudController<Tag, UUID, TagService> {
+public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagService, TagMapper> {
+
+    private final TagMapper mapper;
 
     private final UserService userService;
     private final QuestionGenerationOrchestrationService questionGenerationOrchestrationService;
 
     @Autowired
-    public TagController(TagService tagService, UserService userService, QuestionGenerationOrchestrationService questionGenerationOrchestrationService) {
-        super(tagService);
+    public TagController(TagService tagService, TagMapper tagMapper, UserService userService, QuestionGenerationOrchestrationService questionGenerationOrchestrationService) {
+        super(tagService, tagMapper);
+        this.mapper = tagMapper;
         this.userService = userService;
         this.questionGenerationOrchestrationService = questionGenerationOrchestrationService;
     }
@@ -74,7 +79,9 @@ public class TagController extends BaseCrudController<Tag, UUID, TagService> {
             tags = ((TagService) service).calculateProgressForAll(tags, user);
         }
 
-        model.addAttribute("tags", tags);
+        // Convert entities to DTOs
+        List<TagDTO> tagDTOs = mapper.toDTOList(tags);
+        model.addAttribute("tags", tagDTOs);
         setPageTitle(model, "Tags");
         return "tags/list";
     }
@@ -87,7 +94,7 @@ public class TagController extends BaseCrudController<Tag, UUID, TagService> {
      */
     @GetMapping("/new")
     public String newTagForm(Model model) {
-        model.addAttribute("tag", new Tag());
+        model.addAttribute("tag", new TagDTO());
         model.addAttribute("pageTitle", "Create New Tag");
         return "tags/form";
     }
@@ -95,14 +102,16 @@ public class TagController extends BaseCrudController<Tag, UUID, TagService> {
     /**
      * Display the form for editing an existing tag.
      *
-     * @param id the ID of the tag to edit
+     * @param id    the ID of the tag to edit
      * @param model the model to add attributes to
      * @return the name of the view to render
      */
     @GetMapping("/{id}/edit")
     public String editTagForm(@PathVariable UUID id, Model model) {
         Tag tag = getEntityOrThrow(service.findById(id), "Tag not found");
-        model.addAttribute("tag", tag);
+        // Convert entity to DTO
+        TagDTO tagDTO = mapper.toDTO(tag);
+        model.addAttribute("tag", tagDTO);
         setPageTitle(model, "Edit Tag");
         return "tags/form";
     }
@@ -110,11 +119,13 @@ public class TagController extends BaseCrudController<Tag, UUID, TagService> {
     /**
      * Process the form submission for creating or updating a tag.
      *
-     * @param tag the tag data from the form
+     * @param tagDTO the tag data from the form
      * @return a redirect to the tag list
      */
     @PostMapping
-    public String saveTag(@ModelAttribute Tag tag) {
+    public String saveTag(@ModelAttribute TagDTO tagDTO) {
+        // Convert DTO to entity
+        Tag tag = mapper.toEntity(tagDTO);
         service.save(tag);
         // Start the asynchronous generation process without blocking
         questionGenerationOrchestrationService.startEasyQuestionGeneration(tag.getName());
@@ -136,7 +147,7 @@ public class TagController extends BaseCrudController<Tag, UUID, TagService> {
     /**
      * Search for tags by name.
      *
-     * @param name the name to search for
+     * @param name  the name to search for
      * @param model the model to add attributes to
      * @return the name of the view to render
      */
@@ -155,7 +166,9 @@ public class TagController extends BaseCrudController<Tag, UUID, TagService> {
                 tag = service.calculateProgress(tag, user);
             }
 
-            model.addAttribute("tags", List.of(tag));
+            // Convert entity to DTO
+            TagDTO tagDTO = mapper.toDTO(tag);
+            model.addAttribute("tags", List.of(tagDTO));
         } else {
             model.addAttribute("tags", List.of());
             model.addAttribute("message", "No tags found with name: " + name);
@@ -168,7 +181,7 @@ public class TagController extends BaseCrudController<Tag, UUID, TagService> {
     /**
      * View a tag.
      *
-     * @param id the tag ID
+     * @param id    the tag ID
      * @param model the model to add attributes to
      * @return the name of the view to render
      */

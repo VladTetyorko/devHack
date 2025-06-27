@@ -15,7 +15,7 @@ import java.util.UUID;
  * Implementation of the NoteService interface.
  */
 @Service
-public class NoteServiceImpl extends BaseServiceImpl<Note, UUID, NoteRepository> implements NoteService {
+public class NoteServiceImpl extends UserOwnedServiceImpl<Note, UUID, NoteRepository> implements NoteService {
 
     /**
      * Constructor with repository injection.
@@ -40,5 +40,10 @@ public class NoteServiceImpl extends BaseServiceImpl<Note, UUID, NoteRepository>
     @Override
     public List<Note> findNotesByUserAndLinkedQuestion(User user, InterviewQuestion question) {
         return repository.findByUserAndQuestion(user, question);
+    }
+
+    @Override
+    protected User getEntityUser(Note entity) {
+        return entity.getUser();
     }
 }

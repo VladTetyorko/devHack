@@ -20,16 +20,19 @@ import java.util.UUID;
  */
 @Controller
 @RequestMapping("/notes")
-public class NoteController extends BaseCrudController<Note, UUID, NoteService> {
+public class NoteController extends UserEntityController<Note, UUID, NoteService> {
 
-    private final UserService userService;
     private final InterviewQuestionService questionService;
 
     @Autowired
     public NoteController(NoteService noteService, UserService userService, InterviewQuestionService questionService) {
-        super(noteService);
-        this.userService = userService;
+        super(noteService, userService);
         this.questionService = questionService;
+    }
+
+    @Override
+    protected User getEntityUser(Note entity) {
+        return entity.getUser();
     }
 
     @Override
@@ -58,23 +61,33 @@ public class NoteController extends BaseCrudController<Note, UUID, NoteService> 
     }
 
     /**
-     * Display a list of all notes.
+     * Display a list of notes for the current user.
      *
      * @param model the model to add attributes to
      * @return the name of the view to render
      */
     @Override
     public String list(Model model) {
-        List<Note> notes = service.findAll();
+        // Get the current authenticated user
+        org.springframework.security.core.Authentication authentication =
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String currentUserEmail = authentication.getName();
+
+        // Find the user by email
+        User currentUser = userService.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new IllegalStateException("Current user not found"));
+
+        // Get notes for the current user
+        List<Note> notes = ((NoteService) service).findNotesByUser(currentUser);
         model.addAttribute("notes", notes);
-        setPageTitle(model, "Notes");
+        setPageTitle(model, "My Notes");
         return "notes/list";
     }
 
     /**
      * Display a specific note.
      *
-     * @param id the ID of the note to display
+     * @param id    the ID of the note to display
      * @param model the model to add attributes to
      * @return the name of the view to render
      */
@@ -90,7 +103,7 @@ public class NoteController extends BaseCrudController<Note, UUID, NoteService> 
      * Display the form for creating a new note.
      *
      * @param questionId the ID of the question being linked to the note
-     * @param model the model to add attributes to
+     * @param model      the model to add attributes to
      * @return the name of the view to render
      */
     @GetMapping("/new")
@@ -115,7 +128,7 @@ public class NoteController extends BaseCrudController<Note, UUID, NoteService> 
     /**
      * Display the form for editing an existing note.
      *
-     * @param id the ID of the note to edit
+     * @param id    the ID of the note to edit
      * @param model the model to add attributes to
      * @return the name of the view to render
      */
@@ -132,8 +145,8 @@ public class NoteController extends BaseCrudController<Note, UUID, NoteService> 
     /**
      * Process the form submission for creating or updating a note.
      *
-     * @param note the note data from the form
-     * @param userId the ID of the user who created the note
+     * @param note       the note data from the form
+     * @param userId     the ID of the user who created the note
      * @param questionId the ID of the question linked to the note
      * @return a redirect to the note list
      */
@@ -170,7 +183,7 @@ public class NoteController extends BaseCrudController<Note, UUID, NoteService> 
      * Display notes by user.
      *
      * @param userId the ID of the user
-     * @param model the model to add attributes to
+     * @param model  the model to add attributes to
      * @return the name of the view to render
      */
     @GetMapping("/user/{userId}")
@@ -187,7 +200,7 @@ public class NoteController extends BaseCrudController<Note, UUID, NoteService> 
      * Display notes by question.
      *
      * @param questionId the ID of the question
-     * @param model the model to add attributes to
+     * @param model      the model to add attributes to
      * @return the name of the view to render
      */
     @GetMapping("/question/{questionId}")

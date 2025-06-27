@@ -33,28 +33,28 @@ public class AuditServiceImpl extends BaseServiceImpl<Audit, UUID, AuditReposito
 
     @Override
     public Audit auditCreate(String entityType, String entityId, User user, String details) {
-        logger.debug("Creating audit record for CREATE operation on entity: {}, ID: {}, user: {}", 
+        logger.debug("Creating audit record for CREATE operation on entity: {}, ID: {}, user: {}",
                 entityType, entityId, user != null ? user.getName() : "null");
         return createAudit(Audit.OperationType.CREATE, entityType, entityId, user, details);
     }
 
     @Override
     public Audit auditRead(String entityType, String entityId, User user, String details) {
-        logger.debug("Creating audit record for READ operation on entity: {}, ID: {}, user: {}", 
+        logger.debug("Creating audit record for READ operation on entity: {}, ID: {}, user: {}",
                 entityType, entityId, user != null ? user.getName() : "null");
         return createAudit(Audit.OperationType.READ, entityType, entityId, user, details);
     }
 
     @Override
     public Audit auditUpdate(String entityType, String entityId, User user, String details) {
-        logger.debug("Creating audit record for UPDATE operation on entity: {}, ID: {}, user: {}", 
+        logger.debug("Creating audit record for UPDATE operation on entity: {}, ID: {}, user: {}",
                 entityType, entityId, user != null ? user.getName() : "null");
         return createAudit(Audit.OperationType.UPDATE, entityType, entityId, user, details);
     }
 
     @Override
     public Audit auditDelete(String entityType, String entityId, User user, String details) {
-        logger.debug("Creating audit record for DELETE operation on entity: {}, ID: {}, user: {}", 
+        logger.debug("Creating audit record for DELETE operation on entity: {}, ID: {}, user: {}",
                 entityType, entityId, user != null ? user.getName() : "null");
         return createAudit(Audit.OperationType.DELETE, entityType, entityId, user, details);
     }
@@ -63,14 +63,14 @@ public class AuditServiceImpl extends BaseServiceImpl<Audit, UUID, AuditReposito
      * Helper method to create and save an audit record.
      *
      * @param operationType the type of operation
-     * @param entityType the type of entity
-     * @param entityId the ID of the entity
-     * @param user the user who performed the operation
-     * @param details additional details about the operation
+     * @param entityType    the type of entity
+     * @param entityId      the ID of the entity
+     * @param user          the user who performed the operation
+     * @param details       additional details about the operation
      * @return the created audit record
      */
     private Audit createAudit(Audit.OperationType operationType, String entityType, String entityId, User user, String details) {
-        logger.debug("Building audit record: operation={}, entity={}, ID={}", 
+        logger.debug("Building audit record: operation={}, entity={}, ID={}",
                 operationType, entityType, entityId);
 
         Audit audit = Audit.builder()

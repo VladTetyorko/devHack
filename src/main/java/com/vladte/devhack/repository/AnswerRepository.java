@@ -17,19 +17,23 @@ import java.util.UUID;
 public interface AnswerRepository extends JpaRepository<Answer, UUID> {
     // Custom query methods
     List<Answer> findByUser(User user);
+
     List<Answer> findByQuestion(InterviewQuestion question);
+
     List<Answer> findByUserAndQuestion(User user, InterviewQuestion question);
 
     // Paginated versions of the query methods
     Page<Answer> findByUser(User user, Pageable pageable);
+
     Page<Answer> findByQuestion(InterviewQuestion question, Pageable pageable);
+
     Page<Answer> findByUserAndQuestion(User user, InterviewQuestion question, Pageable pageable);
 
     // Search method with pagination
     @Query("SELECT a FROM Answer a WHERE " +
-           "(:query IS NULL OR LOWER(a.text) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
-           "(:userId IS NULL OR a.user.id = :userId) AND " +
-           "(:questionId IS NULL OR a.question.id = :questionId)")
+            "(:query IS NULL OR LOWER(a.text) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+            "(:userId IS NULL OR a.user.id = :userId) AND " +
+            "(:questionId IS NULL OR a.question.id = :questionId)")
     Page<Answer> searchAnswers(
             @Param("query") String query,
             @Param("userId") UUID userId,

@@ -40,16 +40,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end mt-3">
-                    <a th:href="@{/questions/{id}/edit(id=${question.id})}" class="btn btn-outline-primary me-2">
-                        <i class="fas fa-edit me-1"></i>Edit Question
-                    </a>
-                    <a th:href="@{/questions/{id}/delete(id=${question.id})}" 
-                       class="btn btn-outline-danger"
-                       onclick="return confirm('Are you sure you want to delete this question?')">
-                       <i class="fas fa-trash-alt me-1"></i>Delete Question
-                    </a>
-                </div>
+                <!-- Edit and Delete buttons removed to make the page view-only -->
             </div>
         </div>
 
@@ -76,12 +67,7 @@
                                         <i class="fas fa-clock ms-2 me-1"></i>
                                         <span th:text="${#temporals.format(answer.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
                                     </div>
-                                    <div>
-                                        <a th:href="@{/answers/{id}/edit(id=${answer.id})}" 
-                                           class="btn btn-sm btn-outline-secondary">
-                                           <i class="fas fa-edit me-1"></i>Edit
-                                        </a>
-                                    </div>
+                                    <!-- Edit button removed to make the page view-only -->
                                 </div>
                             </div>
                         </div>
@@ -120,12 +106,7 @@
                                         <i class="fas fa-clock ms-2 me-1"></i>
                                         <span th:text="${#temporals.format(note.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
                                     </div>
-                                    <div>
-                                        <a th:href="@{/notes/{id}/edit(id=${note.id})}" 
-                                           class="btn btn-sm btn-outline-secondary">
-                                           <i class="fas fa-edit me-1"></i>Edit
-                                        </a>
-                                    </div>
+                                    <!-- Edit button removed to make the page view-only -->
                                 </div>
                             </div>
                         </div>

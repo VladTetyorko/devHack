@@ -1,8 +1,8 @@
 package com.vladte.devhack.service.view;
 
+import com.vladte.devhack.dto.VacancyResponseDTO;
 import com.vladte.devhack.model.User;
-import com.vladte.devhack.model.InterviewStage;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
 
 import java.util.UUID;
@@ -14,16 +14,30 @@ import java.util.UUID;
 public interface VacancyResponseViewService {
 
     /**
+     * Prepare the model for the list view of vacancy responses for the current user.
+     *
+     * @param model the model to add attributes to
+     * @return the page of vacancy response DTOs
+     */
+    Page<VacancyResponseDTO> prepareCurrentUserVacancyResponsesModel(Model model);
+
+    /**
+     * Set the page title for the current user's vacancy responses page.
+     *
+     * @param model the model to add the title to
+     */
+    void setCurrentUserVacancyResponsesPageTitle(Model model);
+
+    /**
      * Prepare the model for the search results view.
      *
      * @param query the search query
      * @param stage the interview stage to filter by
-     * @param page the page number
-     * @param size the page size
+     * @param page  the page number
+     * @param size  the page size
      * @param model the model to add attributes to
-     * @return the pageable object created for the search
      */
-    Pageable prepareSearchResultsModel(String query, String stage, int page, int size, Model model);
+    void prepareSearchResultsModel(String query, String stage, int page, int size, Model model);
 
     /**
      * Set the page title for the search results page.
@@ -36,9 +50,9 @@ public interface VacancyResponseViewService {
      * Prepare the model for the user-specific vacancy responses view.
      *
      * @param userId the ID of the user to find vacancy responses for
-     * @param page the page number
-     * @param size the page size
-     * @param model the model to add attributes to
+     * @param page   the page number
+     * @param size   the page size
+     * @param model  the model to add attributes to
      * @return the user whose vacancy responses are being displayed
      */
     User prepareUserVacancyResponsesModel(UUID userId, int page, int size, Model model);
@@ -47,7 +61,7 @@ public interface VacancyResponseViewService {
      * Set the page title for the user-specific vacancy responses page.
      *
      * @param model the model to add the title to
-     * @param user the user whose vacancy responses are being displayed
+     * @param user  the user whose vacancy responses are being displayed
      */
     void setUserVacancyResponsesPageTitle(Model model, User user);
 }

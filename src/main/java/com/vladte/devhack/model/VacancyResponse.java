@@ -58,9 +58,9 @@ public class VacancyResponse extends BasicEntity {
 
     @ManyToMany
     @JoinTable(
-        name = "vacancy_response_tags",
-        joinColumns = @JoinColumn(name = "vacancy_response_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
+            name = "vacancy_response_tags",
+            joinColumns = @JoinColumn(name = "vacancy_response_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
 }

@@ -4,8 +4,8 @@ import com.vladte.devhack.model.Answer;
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.User;
 import com.vladte.devhack.repository.AnswerRepository;
-import com.vladte.devhack.service.domain.AnswerService;
 import com.vladte.devhack.service.api.OpenAiService;
+import com.vladte.devhack.service.domain.AnswerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
  * Implementation of the AnswerService interface.
  */
 @Service
-public class AnswerServiceImpl extends BaseServiceImpl<Answer, UUID, AnswerRepository> implements AnswerService {
+public class AnswerServiceImpl extends UserOwnedServiceImpl<Answer, UUID, AnswerRepository> implements AnswerService {
 
     private static final Logger logger = LoggerFactory.getLogger(AnswerServiceImpl.class);
 
@@ -131,5 +131,10 @@ public class AnswerServiceImpl extends BaseServiceImpl<Answer, UUID, AnswerRepos
             future.completeExceptionally(e);
             return future;
         }
+    }
+
+    @Override
+    protected User getEntityUser(Answer entity) {
+        return entity.getUser();
     }
 }

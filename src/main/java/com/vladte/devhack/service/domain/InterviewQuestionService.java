@@ -32,7 +32,7 @@ public interface InterviewQuestionService extends BaseService<InterviewQuestion,
      * Find questions by difficulty and tag.
      *
      * @param difficulty the difficulty level
-     * @param tag the tag
+     * @param tag        the tag
      * @return a list of questions with the specified difficulty and tag
      */
     List<InterviewQuestion> findQuestionsByDifficultyAndTag(String difficulty, Tag tag);
@@ -41,7 +41,7 @@ public interface InterviewQuestionService extends BaseService<InterviewQuestion,
      * Find questions by difficulty with pagination.
      *
      * @param difficulty the difficulty level
-     * @param pageable pagination information
+     * @param pageable   pagination information
      * @return a page of questions with the specified difficulty
      */
     Page<InterviewQuestion> findQuestionsByDifficulty(String difficulty, Pageable pageable);
@@ -49,7 +49,7 @@ public interface InterviewQuestionService extends BaseService<InterviewQuestion,
     /**
      * Find questions by tag with pagination.
      *
-     * @param tag the tag
+     * @param tag      the tag
      * @param pageable pagination information
      * @return a page of questions with the specified tag
      */
@@ -59,8 +59,8 @@ public interface InterviewQuestionService extends BaseService<InterviewQuestion,
      * Find questions by difficulty and tag with pagination.
      *
      * @param difficulty the difficulty level
-     * @param tag the tag
-     * @param pageable pagination information
+     * @param tag        the tag
+     * @param pageable   pagination information
      * @return a page of questions with the specified difficulty and tag
      */
     Page<InterviewQuestion> findQuestionsByDifficultyAndTag(String difficulty, Tag tag, Pageable pageable);
@@ -68,10 +68,10 @@ public interface InterviewQuestionService extends BaseService<InterviewQuestion,
     /**
      * Search questions with filtering and pagination.
      *
-     * @param query the search query
+     * @param query      the search query
      * @param difficulty the difficulty level
-     * @param tagId the tag ID
-     * @param pageable pagination information
+     * @param tagId      the tag ID
+     * @param pageable   pagination information
      * @return a page of questions matching the search criteria
      */
     Page<InterviewQuestion> searchQuestions(String query, String difficulty, UUID tagId, Pageable pageable);

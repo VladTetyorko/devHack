@@ -27,8 +27,8 @@ public class AuditUtil {
     /**
      * Create an audit record for a create operation asynchronously.
      *
-     * @param entity the entity being created
-     * @param user the user performing the operation
+     * @param entity  the entity being created
+     * @param user    the user performing the operation
      * @param details additional details about the operation
      */
     @Async
@@ -42,9 +42,9 @@ public class AuditUtil {
      * Create an audit record for a read operation asynchronously.
      *
      * @param entityClass the class of the entity being read
-     * @param entityId the ID of the entity being read
-     * @param user the user performing the operation
-     * @param details additional details about the operation
+     * @param entityId    the ID of the entity being read
+     * @param user        the user performing the operation
+     * @param details     additional details about the operation
      */
     @Async
     public void auditRead(Class<?> entityClass, String entityId, User user, String details) {
@@ -55,8 +55,8 @@ public class AuditUtil {
     /**
      * Create an audit record for an update operation asynchronously.
      *
-     * @param entity the entity being updated
-     * @param user the user performing the operation
+     * @param entity  the entity being updated
+     * @param user    the user performing the operation
      * @param details additional details about the operation
      */
     @Async
@@ -70,9 +70,9 @@ public class AuditUtil {
      * Create an audit record for a delete operation asynchronously.
      *
      * @param entityClass the class of the entity being deleted
-     * @param entityId the ID of the entity being deleted
-     * @param user the user performing the operation
-     * @param details additional details about the operation
+     * @param entityId    the ID of the entity being deleted
+     * @param user        the user performing the operation
+     * @param details     additional details about the operation
      */
     @Async
     public void auditDelete(Class<?> entityClass, String entityId, User user, String details) {

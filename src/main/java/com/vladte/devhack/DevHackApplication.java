@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class DevHackApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DevHackApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DevHackApplication.class, args);
+    }
 
 }

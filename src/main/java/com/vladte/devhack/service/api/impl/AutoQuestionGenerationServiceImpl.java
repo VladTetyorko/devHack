@@ -2,12 +2,12 @@ package com.vladte.devhack.service.api.impl;
 
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.Tag;
-import com.vladte.devhack.service.domain.InterviewQuestionService;
-import com.vladte.devhack.service.domain.TagService;
-import com.vladte.devhack.service.domain.UserService;
 import com.vladte.devhack.service.api.AutoQuestionGenerationService;
 import com.vladte.devhack.service.api.OpenAiService;
 import com.vladte.devhack.service.api.QuestionParsingService;
+import com.vladte.devhack.service.domain.InterviewQuestionService;
+import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.domain.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -65,7 +60,7 @@ public class AutoQuestionGenerationServiceImpl implements AutoQuestionGeneration
     @Override
     @Async
     public CompletableFuture<List<InterviewQuestion>> generateEasyQuestionsForTag(Tag tag) {
-        logger.info("Starting to generate {} {} difficulty questions for tag: {}", 
+        logger.info("Starting to generate {} {} difficulty questions for tag: {}",
                 QUESTION_COUNT, DIFFICULTY, tag.getName());
 
         try {
@@ -91,16 +86,16 @@ public class AutoQuestionGenerationServiceImpl implements AutoQuestionGeneration
 
                 saveQuestionsToDatabase(questionTexts, tag, savedQuestions);
 
-                logger.info("Successfully generated and saved {} questions for tag: {}", 
+                logger.info("Successfully generated and saved {} questions for tag: {}",
                         savedQuestions.size(), tag.getName());
                 return savedQuestions;
             }).exceptionally(ex -> {
-                logger.error("Error while processing generated questions for tag {}: {}", 
+                logger.error("Error while processing generated questions for tag {}: {}",
                         tag.getName(), ex.getMessage(), ex);
                 throw new RuntimeException("Failed to process generated questions: " + ex.getMessage(), ex);
             });
         } catch (Exception e) {
-            logger.error("Error while generating questions for tag {}: {}", 
+            logger.error("Error while generating questions for tag {}: {}",
                     tag.getName(), e.getMessage(), e);
             CompletableFuture<List<InterviewQuestion>> future = new CompletableFuture<>();
             future.completeExceptionally(new RuntimeException(
@@ -132,14 +127,14 @@ public class AutoQuestionGenerationServiceImpl implements AutoQuestionGeneration
     /**
      * Save the generated questions to the database.
      *
-     * @param questionTexts the list of question texts to save
-     * @param tag the tag to associate with the questions
+     * @param questionTexts  the list of question texts to save
+     * @param tag            the tag to associate with the questions
      * @param savedQuestions the list to add the saved questions to
      */
     @Transactional
     protected void saveQuestionsToDatabase(List<String> questionTexts, Tag tag, List<InterviewQuestion> savedQuestions) {
         for (String questionText : questionTexts) {
-            logger.debug("Processing question: {}", 
+            logger.debug("Processing question: {}",
                     questionText.length() > 50 ? questionText.substring(0, 47) + "..." : questionText);
 
             InterviewQuestion question = new InterviewQuestion();

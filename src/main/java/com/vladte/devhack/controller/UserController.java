@@ -1,5 +1,7 @@
 package com.vladte.devhack.controller;
 
+import com.vladte.devhack.dto.UserDTO;
+import com.vladte.devhack.mapper.UserMapper;
 import com.vladte.devhack.model.User;
 import com.vladte.devhack.service.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,14 @@ import java.util.UUID;
  */
 @Controller
 @RequestMapping("/users")
-public class UserController extends BaseCrudController<User, UUID, UserService> {
+public class UserController extends BaseCrudController<User, UserDTO, UUID, UserService, UserMapper> {
+
+    private final UserMapper mapper;
 
     @Autowired
-    public UserController(UserService userService) {
-        super(userService);
+    public UserController(UserService userService, UserMapper userMapper) {
+        super(userService, userMapper);
+        this.mapper = userMapper;
     }
 
     @Override
@@ -62,7 +67,7 @@ public class UserController extends BaseCrudController<User, UUID, UserService> 
     /**
      * Display the form for editing an existing user.
      *
-     * @param id the ID of the user to edit
+     * @param id    the ID of the user to edit
      * @param model the model to add attributes to
      * @return the name of the view to render
      */

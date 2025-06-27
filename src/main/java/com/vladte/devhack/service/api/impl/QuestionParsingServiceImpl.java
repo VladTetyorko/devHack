@@ -40,14 +40,14 @@ public class QuestionParsingServiceImpl implements QuestionParsingService {
                 // If we have a current question, add it to the list
                 if (currentQuestion.length() > 0) {
                     questions.add(currentQuestion.toString().trim());
-                    logger.debug("Added question #{}: {}", questionCount++, 
-                        currentQuestion.length() > 50 ? currentQuestion.substring(0, 47) + "..." : currentQuestion);
+                    logger.debug("Added question #{}: {}", questionCount++,
+                            currentQuestion.length() > 50 ? currentQuestion.substring(0, 47) + "..." : currentQuestion);
                     currentQuestion = new StringBuilder();
                 }
                 // Add the new question text without the "Question: " prefix
                 String questionText = line.trim().substring("Question: ".length());
-                logger.debug("Found new question starting with: {}", 
-                    questionText.length() > 50 ? questionText.substring(0, 47) + "..." : questionText);
+                logger.debug("Found new question starting with: {}",
+                        questionText.length() > 50 ? questionText.substring(0, 47) + "..." : questionText);
                 currentQuestion.append(questionText);
             } else if (currentQuestion.length() > 0) {
                 // If we have a current question and the line doesn't start with "Question: ",
@@ -62,8 +62,8 @@ public class QuestionParsingServiceImpl implements QuestionParsingService {
         // Add the last question if there is one
         if (currentQuestion.length() > 0) {
             questions.add(currentQuestion.toString().trim());
-            logger.debug("Added final question #{}: {}", questionCount++, 
-                currentQuestion.length() > 50 ? currentQuestion.substring(0, 47) + "..." : currentQuestion);
+            logger.debug("Added final question #{}: {}", questionCount++,
+                    currentQuestion.length() > 50 ? currentQuestion.substring(0, 47) + "..." : currentQuestion);
         }
 
         logger.info("Parsed {} questions from generated text", questions.size());

@@ -32,9 +32,9 @@ public class InterviewQuestion extends BasicEntity {
 
     @ManyToMany
     @JoinTable(
-        name = "question_tags",
-        joinColumns = @JoinColumn(name = "question_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
+            name = "question_tags",
+            joinColumns = @JoinColumn(name = "question_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
 

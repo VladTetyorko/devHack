@@ -1,18 +1,15 @@
 package com.vladte.devhack.controller;
 
+import com.vladte.devhack.dto.InterviewQuestionDTO;
+import com.vladte.devhack.mapper.InterviewQuestionMapper;
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.Tag;
 import com.vladte.devhack.service.api.QuestionGenerationOrchestrationService;
-import com.vladte.devhack.service.domain.DashboardService;
 import com.vladte.devhack.service.domain.InterviewQuestionService;
-import com.vladte.devhack.service.view.SearchService;
-import com.vladte.devhack.service.domain.TagService;
 import com.vladte.devhack.service.view.DashboardViewService;
 import com.vladte.devhack.service.view.QuestionFormService;
 import com.vladte.devhack.service.view.SearchViewService;
 import com.vladte.devhack.service.view.TagQuestionService;
-import com.vladte.devhack.service.api.AutoQuestionGenerationService;
-import com.vladte.devhack.service.api.QuestionGenerationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Controller for handling requests related to interview questions.
@@ -33,9 +26,10 @@ import java.util.UUID;
  */
 @Controller
 @RequestMapping("/questions")
-public class InterviewQuestionController extends BaseCrudController<InterviewQuestion, UUID, InterviewQuestionService> {
+public class InterviewQuestionController extends BaseCrudController<InterviewQuestion, InterviewQuestionDTO, UUID, InterviewQuestionService, InterviewQuestionMapper> {
 
     private static final Logger logger = LoggerFactory.getLogger(InterviewQuestionController.class);
+    private final InterviewQuestionMapper mapper;
     private final QuestionGenerationOrchestrationService questionGenerationOrchestrationService;
     private final DashboardViewService dashboardViewService;
     private final QuestionFormService questionFormService;
@@ -45,12 +39,14 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
     @Autowired
     public InterviewQuestionController(
             InterviewQuestionService questionService,
+            InterviewQuestionMapper interviewQuestionMapper,
             QuestionGenerationOrchestrationService questionGenerationOrchestrationService,
             DashboardViewService dashboardViewService,
             QuestionFormService questionFormService,
             TagQuestionService tagQuestionService,
             SearchViewService searchViewService) {
-        super(questionService);
+        super(questionService, interviewQuestionMapper);
+        this.mapper = interviewQuestionMapper;
         this.questionGenerationOrchestrationService = questionGenerationOrchestrationService;
         this.dashboardViewService = dashboardViewService;
         this.questionFormService = questionFormService;
@@ -87,7 +83,7 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
     public String view(@PathVariable UUID id, Model model) {
         super.view(id, model);
 
-        return "questions/form";
+        return "questions/view";
     }
 
 
@@ -115,67 +111,13 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
     }
 
 
-    /**
-     * Display the form for creating a new interview question.
-     *
-     * @param model the model to add attributes to
-     * @return the name of the view to render
-     */
-    @GetMapping("/new")
-    public String newQuestionForm(Model model) {
-        // Delegate to the question form service
-        questionFormService.prepareNewQuestionForm(model);
-        questionFormService.setNewQuestionPageTitle(model);
-        return "questions/form";
-    }
-
-    /**
-     * Display the form for editing an existing interview question.
-     *
-     * @param id the ID of the question to edit
-     * @param model the model to add attributes to
-     * @return the name of the view to render
-     */
-    @GetMapping("/{id}/edit")
-    public String editQuestionForm(@PathVariable UUID id, Model model) {
-        InterviewQuestion question = questionFormService.prepareEditQuestionForm(id, model);
-        if (question == null) {
-            throw new RuntimeException("Question not found");
-        }
-        questionFormService.setEditQuestionPageTitle(model);
-        return "questions/form";
-    }
-
-    /**
-     * Process the form submission for creating or updating an interview question.
-     *
-     * @param question the question data from the form
-     * @return a redirect to the question list
-     */
-    @PostMapping
-    public String saveQuestion(@ModelAttribute InterviewQuestion question) {
-        questionFormService.saveQuestion(question);
-
-        return "redirect:/questions";
-    }
-
-    /**
-     * Delete an interview question.
-     *
-     * @param id the ID of the question to delete
-     * @return a redirect to the question list
-     */
-    @GetMapping("/{id}/delete")
-    public String deleteQuestion(@PathVariable UUID id) {
-        questionFormService.deleteQuestion(id);
-        return "redirect:/questions";
-    }
+    // View-only controller: Create, Edit, and Delete operations have been removed
 
     /**
      * Filter questions by tag.
      *
      * @param tagSlug the slug of the tag to filter by
-     * @param model the model to add attributes to
+     * @param model   the model to add attributes to
      * @return the name of the view to render
      */
     @GetMapping("/tag/{tagSlug}")
@@ -194,12 +136,12 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
      * Search for questions by text and filter by difficulty and tag.
      * This method has been refactored to use the SearchService, following the Single Responsibility Principle.
      *
-     * @param query the search query
+     * @param query      the search query
      * @param difficulty the difficulty to filter by
-     * @param tagId the tag ID to filter by
-     * @param page the page number
-     * @param size the page size
-     * @param model the model to add attributes to
+     * @param tagId      the tag ID to filter by
+     * @param page       the page number
+     * @param size       the page size
+     * @param model      the model to add attributes to
      * @return the name of the view to render
      */
     @GetMapping("/search")
@@ -225,10 +167,10 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
      * Generate interview questions using AI based on a tag.
      * This method handles both AJAX and regular form submissions.
      *
-     * @param tagName the name of the tag to generate questions for
-     * @param count the number of questions to generate
+     * @param tagName    the name of the tag to generate questions for
+     * @param count      the number of questions to generate
      * @param difficulty the difficulty level of the questions
-     * @param model the model to add attributes to
+     * @param model      the model to add attributes to
      * @return a redirect to the question list filtered by the generated tag
      */
     @PostMapping("/generate")
@@ -238,34 +180,17 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
             @RequestParam(defaultValue = "Medium") String difficulty,
             Model model) {
 
-        // Validate input
-        if (!questionGenerationOrchestrationService.validateTagName(tagName)) {
-            model.addAttribute("error", "Tag name is required");
-            return "redirect:/questions";
-        }
-
-        // Start the asynchronous generation process without blocking
-        questionGenerationOrchestrationService.startQuestionGeneration(tagName, count, difficulty);
-
-        // Add message that generation has started
-        model.addAttribute("success", 
-                questionGenerationOrchestrationService.buildGenerationSuccessMessage(count, difficulty, tagName));
-
-        // Find the tag to redirect to its questions page
-        Optional<Tag> tag = questionGenerationOrchestrationService.findTagByName(tagName);
-        if (tag.isPresent()) {
-            return "redirect:/questions/tag/" + tag.get().getSlug();
-        } else {
-            return "redirect:/questions";
-        }
+        // This operation is disabled to make the controller view-only
+        model.addAttribute("error", "Question generation is disabled. This controller is view-only.");
+        return "redirect:/questions";
     }
 
     /**
      * Generate interview questions using AI based on a tag (AJAX version).
      * This endpoint is used for AJAX requests from the modal form.
      *
-     * @param tagName the name of the tag to generate questions for
-     * @param count the number of questions to generate
+     * @param tagName    the name of the tag to generate questions for
+     * @param count      the number of questions to generate
      * @param difficulty the difficulty level of the questions
      * @return a JSON response with status and redirect information
      */
@@ -348,7 +273,7 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
      * This endpoint processes one tag per operation and makes one request to OpenAI per tag.
      *
      * @param tagName the name of the tag to generate questions for
-     * @param model the model to add attributes to
+     * @param model   the model to add attributes to
      * @return a redirect to the question list filtered by the generated tag
      */
     @PostMapping("/auto-generate")
@@ -366,7 +291,7 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
         questionGenerationOrchestrationService.startEasyQuestionGeneration(tagName);
 
         // Add message that generation has started
-        model.addAttribute("success", 
+        model.addAttribute("success",
                 questionGenerationOrchestrationService.buildEasyGenerationSuccessMessage(tagName));
 
         // Find the tag to redirect to its questions page
@@ -398,7 +323,7 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
         // Start the asynchronous generation process without blocking
         questionGenerationOrchestrationService.startEasyQuestionGeneration(tagName);
 
-        return questionGenerationOrchestrationService.buildApiResponse(true, 
+        return questionGenerationOrchestrationService.buildApiResponse(true,
                 String.format("Started auto-generating 3 easy questions for tag '%s'", tagName));
     }
 
@@ -407,7 +332,7 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
      * This endpoint processes each tag separately and makes one request to OpenAI per tag.
      *
      * @param tagIds the IDs of the tags to generate questions for
-     * @param model the model to add attributes to
+     * @param model  the model to add attributes to
      * @return a redirect to the question list
      */
     @PostMapping("/auto-generate-multi")
@@ -427,7 +352,7 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
         questionGenerationOrchestrationService.startEasyQuestionGenerationForMultipleTags(tagIds);
 
         // Add message that generation has started
-        model.addAttribute("success", 
+        model.addAttribute("success",
                 questionGenerationOrchestrationService.buildMultiTagEasyGenerationSuccessMessage(tagIds.size()));
 
         return "redirect:/questions";

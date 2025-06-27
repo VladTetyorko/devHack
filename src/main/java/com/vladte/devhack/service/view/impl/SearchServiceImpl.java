@@ -3,8 +3,8 @@ package com.vladte.devhack.service.view.impl;
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.Tag;
 import com.vladte.devhack.service.domain.InterviewQuestionService;
-import com.vladte.devhack.service.view.SearchService;
 import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.view.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,20 +38,20 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public String buildSearchPageTitle(String query, String difficulty, UUID tagId) {
         StringBuilder titleBuilder = new StringBuilder("Search Results");
-        
+
         if (StringUtils.hasText(query)) {
             titleBuilder.append(" for: ").append(query);
         }
-        
+
         if (StringUtils.hasText(difficulty)) {
             titleBuilder.append(" (Difficulty: ").append(difficulty).append(")");
         }
-        
+
         if (tagId != null) {
             Optional<Tag> tagOpt = tagService.findById(tagId);
             tagOpt.ifPresent(tag -> titleBuilder.append(" (Tag: ").append(tag.getName()).append(")"));
         }
-        
+
         return titleBuilder.toString();
     }
 }

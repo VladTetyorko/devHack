@@ -10,11 +10,7 @@ import com.vladte.devhack.service.domain.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +24,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag, UUID, TagRepository> im
     /**
      * Constructor with repository and service injection.
      *
-     * @param repository the tag repository
+     * @param repository    the tag repository
      * @param answerService the answer service
      */
     @Autowired

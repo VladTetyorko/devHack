@@ -884,6 +884,7 @@ hr {
 
 #theme-toggle-icon.fa-sun {
     transform: rotate(180deg);
+    color: #ffeb3b; /* Yellow color for sun icon */
 }
 
 #theme-toggle-icon.fa-moon {

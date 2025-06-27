@@ -44,6 +44,10 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         // Public pages
                         .requestMatchers("/", "/login", "/register", "/about").permitAll()
+                        // Manager-only pages
+                        .requestMatchers("/admin/**").hasRole("MANAGER")
+                        // User-specific resources
+                        .requestMatchers("/answers/**", "/notes/**", "/vacancy-responses/**").hasAnyRole("USER", "MANAGER")
                         // Secured pages
                         .anyRequest().authenticated()
                 )

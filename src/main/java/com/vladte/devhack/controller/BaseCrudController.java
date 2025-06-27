@@ -1,10 +1,14 @@
 package com.vladte.devhack.controller;
 
+import com.vladte.devhack.dto.BaseDTO;
+import com.vladte.devhack.mapper.EntityDTOMapper;
 import com.vladte.devhack.model.BasicEntity;
 import com.vladte.devhack.service.domain.BaseService;
 import com.vladte.devhack.service.view.BaseCrudViewService;
 import com.vladte.devhack.service.view.BaseViewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,40 +17,54 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.util.List;
 
 /**
- * Base controller for CRUD operations.
+ * Base controller for CRUD operations with DTO mapping.
+ * This class follows the SOLID principles:
+ * - Single Responsibility: Handles only controller logic, delegates mapping to mappers and business logic to services
+ * - Open/Closed: Open for extension (via generics and abstract methods) but closed for modification
+ * - Liskov Substitution: Subtypes can be used without affecting the behavior of the system
+ * - Interface Segregation: Uses specific interfaces for different responsibilities
+ * - Dependency Inversion: Depends on abstractions (interfaces) not concrete implementations
  *
- * @param <T> the entity type
+ * @param <E>  the entity type, must extend BasicEntity
+ * @param <D>  the DTO type, must implement BaseDTO
  * @param <ID> the entity ID type
- * @param <S> the service type
+ * @param <S>  the service type
+ * @param <M>  the mapper type
  */
-public abstract class BaseCrudController<T extends BasicEntity, ID, S extends BaseService<T, ID>> extends BaseController {
+public abstract class BaseCrudController<E extends BasicEntity, D extends BaseDTO, ID, S extends BaseService<E, ID>, M extends EntityDTOMapper<E, D>> extends BaseController {
 
     protected final S service;
+    protected final M mapper;
     protected BaseCrudViewService baseCrudViewService;
 
     /**
-     * Constructor with service and view service injection.
+     * Constructor with service, mapper, and view service injection.
      *
-     * @param service the service
-     * @param baseViewService the base view service
+     * @param service             the service
+     * @param mapper              the entity-DTO mapper
+     * @param baseViewService     the base view service
      * @param baseCrudViewService the base CRUD view service
      */
-    protected BaseCrudController(S service, 
-                               BaseViewService baseViewService,
-                               BaseCrudViewService baseCrudViewService) {
+    protected BaseCrudController(S service,
+                                 M mapper,
+                                 BaseViewService baseViewService,
+                                 BaseCrudViewService baseCrudViewService) {
         super(baseViewService);
         this.service = service;
+        this.mapper = mapper;
         this.baseCrudViewService = baseCrudViewService;
     }
 
     /**
-     * Constructor with service injection for backward compatibility.
+     * Constructor with service and mapper injection for backward compatibility.
      *
      * @param service the service
+     * @param mapper  the entity-DTO mapper
      */
-    protected BaseCrudController(S service) {
+    protected BaseCrudController(S service, M mapper) {
         super();
         this.service = service;
+        this.mapper = mapper;
     }
 
     /**
@@ -95,39 +113,47 @@ public abstract class BaseCrudController<T extends BasicEntity, ID, S extends Ba
     protected abstract String getEntityName();
 
     /**
-     * List all entities.
+     * List all entities as DTOs.
      *
      * @param model the model
      * @return the view name
      */
     @RequestMapping(method = RequestMethod.GET)
     public String list(Model model) {
-        List<T> entities = service.findAll();
+        List<E> entities = service.findAll();
+        List<D> dtos = mapper.toDTOList(entities);
+
         if (baseCrudViewService != null) {
+            // Use the entity name for model attribute to maintain compatibility
+            model.addAttribute(getModelAttributeName(), dtos);
             baseCrudViewService.prepareListModel(entities, getEntityName(), getListPageTitle(), model);
         } else {
             // Fallback for backward compatibility
-            model.addAttribute(getModelAttributeName(), entities);
+            model.addAttribute(getModelAttributeName(), dtos);
             setPageTitle(model, getListPageTitle());
         }
         return getListViewName();
     }
 
     /**
-     * View an entity.
+     * View an entity as DTO.
      *
-     * @param id the entity ID
+     * @param id    the entity ID
      * @param model the model
      * @return the view name
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String view(@PathVariable ID id, Model model) {
-        T entity = getEntityOrThrow(service.findById(id), getEntityName() + " not found");
+        E entity = getEntityOrThrow(service.findById(id), getEntityName() + " not found");
+        D dto = mapper.toDTO(entity);
+
         if (baseCrudViewService != null) {
+            // Add DTO to model
+            model.addAttribute(getModelAttributeName(false), dto);
             baseCrudViewService.prepareDetailModel(entity, getEntityName(), getDetailPageTitle(), model);
         } else {
             // Fallback for backward compatibility
-            model.addAttribute(getModelAttributeName(false), entity);
+            model.addAttribute(getModelAttributeName(false), dto);
             setPageTitle(model, getDetailPageTitle());
         }
         return getDetailViewName();
@@ -153,4 +179,14 @@ public abstract class BaseCrudController<T extends BasicEntity, ID, S extends Ba
         return plural ? name + "s" : name;
     }
 
+    /**
+     * Convert a page of entities to a page of DTOs.
+     *
+     * @param entityPage the page of entities
+     * @return the page of DTOs
+     */
+    protected Page<D> toDTOPage(Page<E> entityPage) {
+        List<D> dtoList = mapper.toDTOList(entityPage.getContent());
+        return new PageImpl<>(dtoList, entityPage.getPageable(), entityPage.getTotalElements());
+    }
 }

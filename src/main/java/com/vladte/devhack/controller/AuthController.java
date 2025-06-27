@@ -3,7 +3,6 @@ package com.vladte.devhack.controller;
 import com.vladte.devhack.model.User;
 import com.vladte.devhack.service.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -54,9 +53,9 @@ public class AuthController extends BaseController {
     /**
      * Process the registration form submission.
      *
-     * @param user the user data from the form
+     * @param user   the user data from the form
      * @param result the binding result for validation
-     * @param model the model to add attributes to
+     * @param model  the model to add attributes to
      * @return the name of the view to render
      */
     @PostMapping("/register")
@@ -73,7 +72,7 @@ public class AuthController extends BaseController {
         }
 
         userService.reguister(user);
-        
+
         // Redirect to login page with success message
         return "redirect:/login?registered";
     }

@@ -3,9 +3,9 @@ package com.vladte.devhack.repository.specification;
 import com.vladte.devhack.model.InterviewStage;
 import com.vladte.devhack.model.User;
 import com.vladte.devhack.model.VacancyResponse;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

@@ -15,8 +15,8 @@ public interface QuestionGenerationService {
     /**
      * Generate interview questions based on a tag and save them to the database asynchronously.
      *
-     * @param tagName the name of the tag to generate questions for
-     * @param count the number of questions to generate
+     * @param tagName    the name of the tag to generate questions for
+     * @param count      the number of questions to generate
      * @param difficulty the difficulty level of the questions
      * @return a CompletableFuture containing the list of generated questions
      */

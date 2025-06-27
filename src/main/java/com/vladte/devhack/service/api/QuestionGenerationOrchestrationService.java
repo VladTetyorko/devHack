@@ -27,8 +27,8 @@ public interface QuestionGenerationOrchestrationService {
     /**
      * Start the asynchronous generation of questions for a tag.
      *
-     * @param tagName the name of the tag to generate questions for
-     * @param count the number of questions to generate
+     * @param tagName    the name of the tag to generate questions for
+     * @param count      the number of questions to generate
      * @param difficulty the difficulty level of the questions
      * @return a CompletableFuture containing the list of generated questions
      */
@@ -53,9 +53,9 @@ public interface QuestionGenerationOrchestrationService {
     /**
      * Build a success message for question generation.
      *
-     * @param count the number of questions being generated
+     * @param count      the number of questions being generated
      * @param difficulty the difficulty level of the questions
-     * @param tagName the name of the tag
+     * @param tagName    the name of the tag
      * @return a success message string
      */
     String buildGenerationSuccessMessage(int count, String difficulty, String tagName);

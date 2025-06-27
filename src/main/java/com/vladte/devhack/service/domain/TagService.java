@@ -30,7 +30,7 @@ public interface TagService extends BaseService<Tag, UUID> {
     /**
      * Calculate progress for a tag based on the user's answered questions.
      *
-     * @param tag the tag to calculate progress for
+     * @param tag  the tag to calculate progress for
      * @param user the user to calculate progress for
      * @return the tag with updated progress information
      */

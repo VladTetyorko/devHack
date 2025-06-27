@@ -3,13 +3,14 @@ package com.vladte.devhack.service.domain;
 import com.vladte.devhack.model.BasicEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Base service interface for common CRUD operations.
  *
- * @param <T> the entity type, must extend BasicEntity
+ * @param <T>  the entity type, must extend BasicEntity
  * @param <ID> the entity ID type
  */
 public interface BaseService<T extends BasicEntity, ID> {

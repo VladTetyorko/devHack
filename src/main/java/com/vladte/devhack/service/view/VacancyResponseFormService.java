@@ -1,6 +1,6 @@
 package com.vladte.devhack.service.view;
 
-import com.vladte.devhack.model.VacancyResponse;
+import com.vladte.devhack.dto.VacancyResponseDTO;
 import org.springframework.ui.Model;
 
 import java.util.UUID;
@@ -21,20 +21,20 @@ public interface VacancyResponseFormService {
     /**
      * Prepare the model for editing an existing vacancy response.
      *
-     * @param id the ID of the vacancy response to edit
+     * @param id    the ID of the vacancy response to edit
      * @param model the model to add attributes to
-     * @return the vacancy response being edited, or null if not found
+     * @return the vacancy response DTO being edited, or null if not found
      */
-    VacancyResponse prepareEditVacancyResponseForm(UUID id, Model model);
+    VacancyResponseDTO prepareEditVacancyResponseForm(UUID id, Model model);
 
     /**
      * Save a vacancy response from form submission.
      *
-     * @param vacancyResponse the vacancy response data from the form
-     * @param userId the ID of the user to associate with the vacancy response
-     * @return the saved vacancy response
+     * @param vacancyResponseDTO the vacancy response data from the form
+     * @param userId             the ID of the user to associate with the vacancy response
+     * @return the saved vacancy response DTO
      */
-    VacancyResponse saveVacancyResponse(VacancyResponse vacancyResponse, UUID userId);
+    VacancyResponseDTO saveVacancyResponse(VacancyResponseDTO vacancyResponseDTO, UUID userId);
 
     /**
      * Delete a vacancy response by ID.

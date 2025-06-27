@@ -1,19 +1,11 @@
 package com.vladte.devhack.controller;
 
-import com.vladte.devhack.model.Answer;
-import com.vladte.devhack.model.InterviewQuestion;
-import com.vladte.devhack.model.Note;
-import com.vladte.devhack.model.Tag;
-import com.vladte.devhack.service.domain.*;
+import com.vladte.devhack.service.domain.DashboardService;
 import com.vladte.devhack.service.view.DashboardViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Controller for handling requests to the home page and other general pages.

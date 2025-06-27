@@ -31,7 +31,7 @@ public interface AnswerService extends BaseService<Answer, UUID> {
     /**
      * Find answers by user and question.
      *
-     * @param user the user
+     * @param user     the user
      * @param question the question
      * @return a list of answers by the user for the question
      */

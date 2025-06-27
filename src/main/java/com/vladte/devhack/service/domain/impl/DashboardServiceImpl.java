@@ -3,11 +3,7 @@ package com.vladte.devhack.service.domain.impl;
 import com.vladte.devhack.model.Answer;
 import com.vladte.devhack.model.InterviewQuestion;
 import com.vladte.devhack.model.Tag;
-import com.vladte.devhack.service.domain.AnswerService;
-import com.vladte.devhack.service.domain.DashboardService;
-import com.vladte.devhack.service.domain.InterviewQuestionService;
-import com.vladte.devhack.service.domain.NoteService;
-import com.vladte.devhack.service.domain.TagService;
+import com.vladte.devhack.service.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,9 +61,9 @@ public class DashboardServiceImpl implements DashboardService {
         Map<String, Integer> progressMap = new HashMap<>();
 
         int questionTotal = Math.max(100, getQuestionCount()); // Assume 100 questions total
-        int answerProgress = Math.min(100, (int)(((double)getAnswerCount() / questionTotal) * 100));
-        int noteProgress = Math.min(100, (int)(((double)getNoteCount() / questionTotal) * 100));
-        int tagProgress = Math.min(100, (int)(((double)getTagCount() / 20) * 100)); // Assume 20 tags total
+        int answerProgress = Math.min(100, (int) (((double) getAnswerCount() / questionTotal) * 100));
+        int noteProgress = Math.min(100, (int) (((double) getNoteCount() / questionTotal) * 100));
+        int tagProgress = Math.min(100, (int) (((double) getTagCount() / 20) * 100)); // Assume 20 tags total
 
         progressMap.put("questionProgress", getQuestionCount() == 0 ? 0 : 100);
         progressMap.put("answerProgress", answerProgress);
@@ -95,14 +91,14 @@ public class DashboardServiceImpl implements DashboardService {
 
         Map<String, Long> countsByDifficulty = new HashMap<>();
         countsByDifficulty.put("Easy", answers.stream()
-            .filter(a -> a.getQuestion() != null && "Easy".equals(a.getQuestion().getDifficulty()))
-            .count());
+                .filter(a -> a.getQuestion() != null && "Easy".equals(a.getQuestion().getDifficulty()))
+                .count());
         countsByDifficulty.put("Medium", answers.stream()
-            .filter(a -> a.getQuestion() != null && "Medium".equals(a.getQuestion().getDifficulty()))
-            .count());
+                .filter(a -> a.getQuestion() != null && "Medium".equals(a.getQuestion().getDifficulty()))
+                .count());
         countsByDifficulty.put("Hard", answers.stream()
-            .filter(a -> a.getQuestion() != null && "Hard".equals(a.getQuestion().getDifficulty()))
-            .count());
+                .filter(a -> a.getQuestion() != null && "Hard".equals(a.getQuestion().getDifficulty()))
+                .count());
 
         return countsByDifficulty;
     }
@@ -113,12 +109,12 @@ public class DashboardServiceImpl implements DashboardService {
         Map<String, Long> answerCounts = getAnswerCountsByDifficulty();
 
         Map<String, Integer> percentages = new HashMap<>();
-        percentages.put("Easy", 
-            questionCounts.get("Easy") > 0 ? (int)(((double)answerCounts.get("Easy") / questionCounts.get("Easy")) * 100) : 0);
-        percentages.put("Medium", 
-            questionCounts.get("Medium") > 0 ? (int)(((double)answerCounts.get("Medium") / questionCounts.get("Medium")) * 100) : 0);
-        percentages.put("Hard", 
-            questionCounts.get("Hard") > 0 ? (int)(((double)answerCounts.get("Hard") / questionCounts.get("Hard")) * 100) : 0);
+        percentages.put("Easy",
+                questionCounts.get("Easy") > 0 ? (int) (((double) answerCounts.get("Easy") / questionCounts.get("Easy")) * 100) : 0);
+        percentages.put("Medium",
+                questionCounts.get("Medium") > 0 ? (int) (((double) answerCounts.get("Medium") / questionCounts.get("Medium")) * 100) : 0);
+        percentages.put("Hard",
+                questionCounts.get("Hard") > 0 ? (int) (((double) answerCounts.get("Hard") / questionCounts.get("Hard")) * 100) : 0);
 
         return percentages;
     }
@@ -134,24 +130,24 @@ public class DashboardServiceImpl implements DashboardService {
         for (Tag tag : tags) {
             // Count questions with this tag
             long questionsWithTag = questions.stream()
-                .filter(q -> q.getTags().contains(tag))
-                .count();
+                    .filter(q -> q.getTags().contains(tag))
+                    .count();
 
             // Count answers for questions with this tag
             long answersForTag = answers.stream()
-                .filter(a -> a.getQuestion() != null && a.getQuestion().getTags().contains(tag))
-                .count();
+                    .filter(a -> a.getQuestion() != null && a.getQuestion().getTags().contains(tag))
+                    .count();
 
             // Calculate percentage
-            int tagAnswerPercentage = questionsWithTag > 0 
-                ? (int)(((double)answersForTag / questionsWithTag) * 100) 
-                : 0;
+            int tagAnswerPercentage = questionsWithTag > 0
+                    ? (int) (((double) answersForTag / questionsWithTag) * 100)
+                    : 0;
 
             // Create TagProgress object
             TagProgress progress = new TagProgress(
-                (int)questionsWithTag,
-                (int)answersForTag,
-                tagAnswerPercentage
+                    (int) questionsWithTag,
+                    (int) answersForTag,
+                    tagAnswerPercentage
             );
 
             tagProgressMap.put(tag.getId(), progress);

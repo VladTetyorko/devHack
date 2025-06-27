@@ -19,7 +19,7 @@
                         <option th:each="user : ${users}" 
                                 th:value="${user.id}" 
                                 th:text="${user.name}"
-                                th:selected="${vacancyResponse.user != null && vacancyResponse.user.id == user.id}">
+                                th:selected="${vacancyResponse.userId != null && vacancyResponse.userId == user.id}">
                             User Name
                         </option>
                     </select>

@@ -1,8 +1,8 @@
 package com.vladte.devhack.service.domain.impl;
 
-import com.vladte.devhack.model.VacancyResponse;
-import com.vladte.devhack.model.User;
 import com.vladte.devhack.model.InterviewStage;
+import com.vladte.devhack.model.User;
+import com.vladte.devhack.model.VacancyResponse;
 import com.vladte.devhack.repository.VacancyResponseRepository;
 import com.vladte.devhack.repository.specification.VacancyResponseSpecification;
 import com.vladte.devhack.service.domain.VacancyResponseService;
@@ -18,7 +18,7 @@ import java.util.UUID;
  * Implementation of the VacancyResponseService interface.
  */
 @Service
-public class VacancyResponseServiceImpl extends BaseServiceImpl<VacancyResponse, UUID, VacancyResponseRepository> implements VacancyResponseService {
+public class VacancyResponseServiceImpl extends UserOwnedServiceImpl<VacancyResponse, UUID, VacancyResponseRepository> implements VacancyResponseService {
 
     /**
      * Constructor with repository injection.
@@ -81,8 +81,13 @@ public class VacancyResponseServiceImpl extends BaseServiceImpl<VacancyResponse,
     @Override
     public Page<VacancyResponse> searchVacancyResponses(String query, InterviewStage stage, Pageable pageable) {
         return repository.findAll(
-            VacancyResponseSpecification.searchVacancyResponses(query, stage),
-            pageable
+                VacancyResponseSpecification.searchVacancyResponses(query, stage),
+                pageable
         );
+    }
+
+    @Override
+    protected User getEntityUser(VacancyResponse entity) {
+        return entity.getUser();
     }
 }

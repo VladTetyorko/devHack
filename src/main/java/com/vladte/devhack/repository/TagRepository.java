@@ -18,6 +18,6 @@ public interface TagRepository extends JpaRepository<Tag, UUID> {
 
     // Search method with pagination
     @Query("SELECT t FROM Tag t WHERE " +
-           "(:query IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+            "(:query IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<Tag> searchTags(@Param("query") String query, Pageable pageable);
 }
