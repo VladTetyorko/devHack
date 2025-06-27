@@ -120,14 +120,14 @@ public abstract class BaseCrudController<E extends BasicEntity, D extends BaseDT
      * List all entities as DTOs with pagination.
      *
      * @param model the model
-     * @param page the page number (0-based)
-     * @param size the page size
+     * @param page  the page number (0-based)
+     * @param size  the page size
      * @return the view name
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String list(Model model, 
-                      @RequestParam(defaultValue = "0") int page,
-                      @RequestParam(defaultValue = "10") int size) {
+    public String list(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<E> entityPage = service.findAll(pageable);
         Page<D> dtoPage = toDTOPage(entityPage);

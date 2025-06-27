@@ -80,9 +80,9 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
 
 
     @Override
-    public String list(Model model, 
-                      @RequestParam(defaultValue = "0") int page,
-                      @RequestParam(defaultValue = "10") int size) {
+    public String list(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size) {
         String viewName = super.list(model, page, size);
 
         questionFormService.prepareGenerateQuestionsForm(model);
@@ -96,7 +96,6 @@ public class InterviewQuestionController extends BaseCrudController<InterviewQue
         dashboardViewService.setDashboardPageTitle(model);
         return "questions/main";
     }
-
 
 
     @GetMapping("/tag/{tagSlug}")

@@ -1,7 +1,7 @@
 // DevHack Animations
 // This file contains JavaScript animations for the DevHack application
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Add animate-on-scroll class to elements that should animate when scrolled into view
     document.querySelectorAll('.card').forEach(card => {
         if (!card.classList.contains('fade-in')) {
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add ripple effect to buttons
     document.querySelectorAll('.btn').forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             const rect = button.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
 
             const targetId = this.getAttribute('href');
@@ -92,12 +92,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add hover effects for cards
     document.querySelectorAll('.card.hover-shadow').forEach(card => {
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.transform = 'translateY(-5px)';
             this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.1)';
         });
 
-        card.addEventListener('mouseleave', function() {
+        card.addEventListener('mouseleave', function () {
             this.style.transform = 'translateY(0)';
             this.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.08)';
         });

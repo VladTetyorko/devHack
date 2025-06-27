@@ -4,10 +4,10 @@
  */
 
 // Check for saved theme preference or use default light theme
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
-    
+
     // Update toggle button icon based on current theme
     updateToggleIcon(savedTheme);
 });
@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleTheme() {
     const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
+
     setTheme(newTheme);
     updateToggleIcon(newTheme);
-    
+
     // Save theme preference to localStorage
     localStorage.setItem('theme', newTheme);
 }
@@ -33,7 +33,7 @@ function toggleTheme() {
 function setTheme(theme) {
     if (theme === 'dark') {
         document.body.classList.add('dark-theme');
-        
+
         // Add dark theme stylesheet if it doesn't exist
         if (!document.getElementById('dark-theme-css')) {
             const darkThemeLink = document.createElement('link');
@@ -44,7 +44,7 @@ function setTheme(theme) {
         }
     } else {
         document.body.classList.remove('dark-theme');
-        
+
         // Remove dark theme stylesheet if it exists
         const darkThemeLink = document.getElementById('dark-theme-css');
         if (darkThemeLink) {

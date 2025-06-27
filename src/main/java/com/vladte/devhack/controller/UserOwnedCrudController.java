@@ -130,15 +130,15 @@ public abstract class UserOwnedCrudController<E extends BasicEntity, D extends B
      * List all entities that the current user has access to as DTOs with pagination.
      *
      * @param model the model
-     * @param page the page number (0-based)
-     * @param size the page size
+     * @param page  the page number (0-based)
+     * @param size  the page size
      * @return the view name
      */
     @Override
     @RequestMapping(method = RequestMethod.GET)
-    public String list(Model model, 
-                      @RequestParam(defaultValue = "0") int page,
-                      @RequestParam(defaultValue = "10") int size) {
+    public String list(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size) {
         logger.debug("Listing entities with access control and pagination");
 
         Page<E> entityPage;
@@ -162,12 +162,12 @@ public abstract class UserOwnedCrudController<E extends BasicEntity, D extends B
             int start = (int) pageable.getOffset();
             int end = Math.min((start + pageable.getPageSize()), accessibleEntities.size());
 
-            List<E> pageContent = start < end ? 
-                accessibleEntities.subList(start, end) : 
-                List.of();
+            List<E> pageContent = start < end ?
+                    accessibleEntities.subList(start, end) :
+                    List.of();
 
             entityPage = new PageImpl<>(pageContent, pageable, accessibleEntities.size());
-            logger.debug("Filtered to {} accessible entities, showing page {} with {} items", 
+            logger.debug("Filtered to {} accessible entities, showing page {} with {} items",
                     accessibleEntities.size(), page, pageContent.size());
         }
 

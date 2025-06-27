@@ -132,7 +132,7 @@ public class AnswerController extends UserEntityController<Answer, UUID, AnswerS
         // Add the question to the model for the view
         if (answerDTO.getQuestionId() != null) {
             questionService.findById(answerDTO.getQuestionId())
-                .ifPresent(question -> model.addAttribute("question", question));
+                    .ifPresent(question -> model.addAttribute("question", question));
         }
 
         answerFormService.setEditAnswerPageTitle(model);

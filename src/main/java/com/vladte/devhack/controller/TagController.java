@@ -64,9 +64,9 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
     }
 
     @Override
-    public String list(Model model, 
-                      @RequestParam(defaultValue = "0") int page,
-                      @RequestParam(defaultValue = "10") int size) {
+    public String list(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size) {
         // Get all tags first to calculate progress
         List<Tag> allTags = service.findAll();
 
@@ -85,9 +85,9 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), allTags.size());
 
-        List<Tag> pageContent = start < end ? 
-            allTags.subList(start, end) : 
-            List.of();
+        List<Tag> pageContent = start < end ?
+                allTags.subList(start, end) :
+                List.of();
 
         Page<Tag> tagPage = new PageImpl<>(pageContent, pageable, allTags.size());
 
@@ -97,9 +97,9 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
 
         // Use ModelBuilder to build the model with pagination
         ModelBuilder.of(model)
-            .addPagination(dtoPage, page, size, "tags")
-            .setPageTitle("Tags")
-            .build();
+                .addPagination(dtoPage, page, size, "tags")
+                .setPageTitle("Tags")
+                .build();
 
         return "tags/list";
     }
@@ -107,9 +107,9 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
     @GetMapping("/new")
     public String newTagForm(Model model) {
         ModelBuilder.of(model)
-            .addAttribute("tag", new TagDTO())
-            .setPageTitle("Create New Tag")
-            .build();
+                .addAttribute("tag", new TagDTO())
+                .setPageTitle("Create New Tag")
+                .build();
         return "tags/form";
     }
 
@@ -120,9 +120,9 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
         TagDTO tagDTO = mapper.toDTO(tag);
 
         ModelBuilder.of(model)
-            .addAttribute("tag", tagDTO)
-            .setPageTitle("Edit Tag")
-            .build();
+                .addAttribute("tag", tagDTO)
+                .setPageTitle("Edit Tag")
+                .build();
 
         return "tags/form";
     }
@@ -149,7 +149,7 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
 
         // Create a ModelBuilder instance
         ModelBuilder modelBuilder = ModelBuilder.of(model)
-            .setPageTitle("Search Results for: " + name);
+                .setPageTitle("Search Results for: " + name);
 
         if (tagOpt.isPresent()) {
             Tag tag = tagOpt.get();
@@ -167,7 +167,7 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
             modelBuilder.addAttribute("tags", List.of(tagDTO));
         } else {
             modelBuilder.addAttribute("tags", List.of())
-                       .addAttribute("message", "No tags found with name: " + name);
+                    .addAttribute("message", "No tags found with name: " + name);
         }
 
         modelBuilder.build();
@@ -185,9 +185,9 @@ public class TagController extends BaseCrudController<Tag, TagDTO, UUID, TagServ
         }
 
         ModelBuilder.of(model)
-            .addAttribute("tag", tag)
-            .setPageTitle("Tag Details")
-            .build();
+                .addAttribute("tag", tag)
+                .setPageTitle("Tag Details")
+                .build();
 
         return "tags/view";
     }
